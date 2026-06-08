@@ -47,7 +47,6 @@ graph TD
     subgraph "Argo CD Projects"
         IP[Infrastructure Project] --> IAS[Infrastructure ApplicationSet]
         AP[Applications Project] --> AAS[Applications ApplicationSet]
-        MP[Monitoring Project] --> MAS[Monitoring ApplicationSet]
     end
     
     subgraph "Infrastructure Components"
@@ -62,15 +61,6 @@ graph TD
         S --> OpenEBS-ZFS
         
         C --> CertManager
-    end
-    
-    subgraph "Monitoring Stack"
-        MAS --> Prometheus
-        MAS --> Grafana
-        MAS --> AlertManager
-        MAS --> NodeExporter
-        MAS --> Loki
-        MAS --> Tempo
     end
     
     subgraph "User Applications"
@@ -89,10 +79,8 @@ graph TD
 
     style IP fill:#f9f,stroke:#333,stroke-width:2px
     style AP fill:#f9f,stroke:#333,stroke-width:2px
-    style MP fill:#f9f,stroke:#333,stroke-width:2px
     style IAS fill:#bbf,stroke:#333,stroke-width:2px
     style AAS fill:#bbf,stroke:#333,stroke-width:2px
-    style MAS fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ### Key Features
@@ -239,43 +227,6 @@ kubectl -n argocd patch secret argocd-secret \
   -p '{"stringData": { "admin.password": "<YOUR_BCRYPT_HASH>", "admin.passwordMtime": "'$(date +%FT%T%Z)'" }}'
 ```
 
-### 5. Monitoring Setup (Prometheus + Grafana + Loki + Tempo)
-
-The monitoring stack uses kube-prometheus-stack Helm chart deployed via Argo CD, providing comprehensive Kubernetes and application monitoring with custom dashboard support.
-
-**Components Included:**
-- **Prometheus**: Metrics collection and storage (10Gi, 7-day retention)
-- **Grafana**: Visualization with custom dashboard auto-discovery via sidecar
-- **AlertManager**: Alert handling and routing with severity-based receivers
-- **Loki**: Log aggregation (SingleBinary mode, 7-day retention)
-- **Tempo**: Distributed tracing (72h retention)
-- **Node Exporter**: Node-level metrics collection
-- **kube-state-metrics**: Kubernetes object state metrics
-
-**Custom Dashboard Management:**
-- Dashboard ConfigMaps are automatically discovered using `grafana_dashboard: "1"` labels
-- Stored in `monitoring/kube-prometheus-stack/dashboards/` directory
-- Includes pre-configured K3s cluster overview and community dashboards
-- Tagged with "custom" for easy identification in Grafana
-
-**Access URLs (after DNS/Gateway setup):**
-- **Grafana**: `https://grafana.yourdomain.xyz` (default: `admin` / `admin`)
-- **Prometheus**: `https://prometheus.yourdomain.xyz`
-- **AlertManager**: `https://alertmanager.yourdomain.xyz`
-
-**Storage (with OpenEBS ZFS LocalPV):**
-- **Prometheus**: `10Gi` with 7-day retention
-- **Grafana**: `1Gi` for dashboards and config
-- **AlertManager**: `512Mi` for alert state
-- **Loki**: `5Gi` with 7-day retention
-- **Tempo**: `2Gi` with 72h retention
-
-**For detailed dashboard management, see [`monitoring/kube-prometheus-stack/dashboards/README.md`](monitoring/kube-prometheus-stack/dashboards/README.md).**
-
----
-
-The ApplicationSet auto-discovers all directories under `monitoring/`. To add a component, create a new directory with a `kustomization.yaml`. To remove one, delete its directory. Each component is managed as a separate ArgoCD Application in its own namespace.
-
 ## 🔒 Security Setup
 
 ### Design Philosophy: Frustration-Free Secrets
@@ -374,15 +325,6 @@ kubectl apply -f infrastructure/infrastructure-components-appset.yaml -n argocd
 # Wait for core services (5-30 mins for certs)
 kubectl wait --for=condition=Available deployment -l type=infrastructure --all-namespaces --timeout=1800s
 
-# Deploy monitoring stack
-kubectl apply -f monitoring/monitoring-components-appset.yaml -n argocd
-
-# Wait for monitoring components to initialize
-echo "Waiting for kube-prometheus-stack to become ready... (this may take a few minutes)"
-kubectl wait --for=condition=Available deployment -l app.kubernetes.io/name=grafana -n kube-prometheus-stack --timeout=600s
-kubectl wait --for=condition=Available deployment -l app.kubernetes.io/name=kube-state-metrics -n kube-prometheus-stack --timeout=600s
-kubectl wait --for=condition=Ready statefulset -l app.kubernetes.io/name=prometheus -n kube-prometheus-stack --timeout=600s
-
 # Deploy applications
 kubectl apply -f my-apps/myapplications-appset.yaml
 ```
@@ -395,11 +337,6 @@ kubectl get pods -A --sort-by=.metadata.creationTimestamp
 # Argo CD status
 kubectl get applications -n argocd -o wide
 
-# Monitoring stack status
-kubectl get pods -n kube-prometheus-stack
-kubectl get pods -n loki
-kubectl get pods -n tempo
-
 # Certificate checks
 kubectl get certificates -A
 kubectl describe clusterissuer cloudflare-cluster-issuer
@@ -411,9 +348,6 @@ cilium connectivity test --all-flows
 
 **Access Endpoints:**
 - Argo CD: `https://argocd.$DOMAIN`
-- Grafana: `https://grafana.$DOMAIN`
-- Prometheus: `https://prometheus.$DOMAIN`
-- AlertManager: `https://alertmanager.$DOMAIN`
 - SearXNG: `https://search.$DOMAIN`
 - LibReddit: `https://reddit.$DOMAIN`
 
@@ -421,7 +355,6 @@ cilium connectivity test --all-flows
 
 | Category       | Components                          |
 |----------------|-------------------------------------|
-| **Monitoring** | Prometheus, Grafana, Loki, Tempo    |
 | **Privacy**    | SearXNG, LibReddit                  |
 | **Infra**      | Cilium, Gateway API, Cloudflared    |
 | **Storage**    | OpenEBS ZFS LocalPV                 |
@@ -456,28 +389,6 @@ ip -o link show | awk -F': ' '{print $2}'  # Verify node interfaces
 kubectl describe CiliumL2AnnouncementPolicy -n kube-system
 ```
 
-**Monitoring Stack Issues:**
-```bash
-# Check pod status in the kube-prometheus-stack namespace
-kubectl get pods -n kube-prometheus-stack
-
-# If pods are stuck, check the Argo CD UI for sync errors.
-# Look at the 'kube-prometheus-stack' application.
-
-# Describe a pod to see its events and find out why it's not starting
-kubectl describe pod <pod-name> -n kube-prometheus-stack
-
-# Check logs for specific monitoring components
-kubectl logs -l app.kubernetes.io/name=grafana -n kube-prometheus-stack
-kubectl logs -l app.kubernetes.io/name=prometheus -n kube-prometheus-stack
-
-# Check Grafana sidecar for dashboard loading issues
-kubectl logs -l app.kubernetes.io/name=grafana -c grafana-sc-dashboard -n kube-prometheus-stack
-
-# Verify custom dashboard ConfigMaps are labeled correctly
-kubectl get configmaps -n kube-prometheus-stack -l grafana_dashboard=1
-```
-
 **Multi-Attach Volume Errors (ReadWriteOnce Issues):**
 ```bash
 # PROBLEM: Multiple pods trying to mount the same ReadWriteOnce (RWO) volume
@@ -505,7 +416,6 @@ kubectl delete pod <stuck-pod-name> -n <namespace> --force --grace-period=0
 kubectl get applicationset -n argocd -o yaml | grep -A 10 syncOptions
 
 # Check deployment strategies for RWO volume users
-kubectl get deployment grafana -n kube-prometheus-stack -o jsonpath='{.spec.strategy.type}'
 kubectl get deployment homepage-dashboard -n homepage-dashboard -o jsonpath='{.spec.strategy.type}'
 kubectl get deployment redis -n searxng -o jsonpath='{.spec.strategy.type}'
 
@@ -533,11 +443,6 @@ kubectl get deployment redis -n searxng -o jsonpath='{.spec.strategy.type}'
 
 2. **Deployment Strategy Changes for RWO Volume Apps:**
    ```yaml
-   # monitoring/kube-prometheus-stack/values.yaml
-   grafana:
-     deploymentStrategy:
-       type: Recreate  # Added to prevent multi-attach during updates
-   
    # my-apps/homepage-dashboard/deployment.yaml
    spec:
      strategy:
@@ -555,7 +460,6 @@ kubectl get deployment redis -n searxng -o jsonpath='{.spec.strategy.type}'
 - **`Recreate` vs `RollingUpdate`**: With ReadWriteOnce volumes, `RollingUpdate` tries to start new pods before old ones terminate, causing volume conflicts. `Recreate` ensures complete pod termination first.
 - **Removing `Replace=true`**: This ArgoCD option deletes and recreates all resources during sync, triggering unnecessary rolling updates and volume conflicts.
 - **`RespectIgnoreDifferences=true`**: Prevents ArgoCD from syncing minor differences that don't affect functionality, reducing unnecessary pod restarts.
-- **Sync Wave Ordering**: Monitoring components use sync wave "1" to deploy after infrastructure (wave "-2" and "0"), ensuring proper resource availability.
 
 **Critical L2 Note:**
 If LoadBalancer IPs aren't advertising properly:

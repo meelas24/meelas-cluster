@@ -6,7 +6,6 @@ metadata:
 spec:
   description: Core infrastructure components
   sourceRepos:
-    - https://github.com/mitchross/k3s-argocd-starter.git
     - https://github.com/meelas24/meelas-cluster.git
   destinations:
     - namespace: "*"
@@ -31,7 +30,6 @@ metadata:
 spec:
   description: User applications
   sourceRepos:
-    - https://github.com/mitchross/k3s-argocd-starter.git
     - https://github.com/meelas24/meelas-cluster.git
   destinations:
     - namespace: "*"
@@ -47,28 +45,3 @@ spec:
       description: Admin role for applications project
       policies:
         - p, proj:applications:admin, applications, *, applications/*, allow
----
-apiVersion: argoproj.io/v1alpha1
-kind: AppProject
-metadata:
-  name: monitoring
-  namespace: argocd
-spec:
-  description: Monitoring and observability components
-  sourceRepos:
-    - https://github.com/mitchross/k3s-argocd-starter.git
-    - https://github.com/meelas24/meelas-cluster.git
-  destinations:
-    - namespace: "*"
-      server: "*"
-  clusterResourceWhitelist:
-    - group: "*"
-      kind: "*"
-  namespaceResourceWhitelist:
-    - group: "*"
-      kind: "*"
-  roles:
-    - name: admin
-      description: Admin role for monitoring project
-      policies:
-        - p, proj:monitoring:admin, applications, *, monitoring/*, allow
