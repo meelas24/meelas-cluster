@@ -14,3 +14,7 @@ chatmodes/
 instructions/
 */chatmodes/
 */instructions/
+
+setup_notes.md
+tunnel-creds.json
+script.sh
