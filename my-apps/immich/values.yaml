@@ -4,23 +4,6 @@ controllers:
       main:
         image:
           tag: v2.6.3
-        env:
-          DB_HOSTNAME: immich-postgres-rw
-          DB_USERNAME:
-            valueFrom:
-              secretKeyRef:
-                name: immich-postgres-app
-                key: username
-          DB_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: immich-postgres-app
-                key: password
-          DB_DATABASE_NAME:
-            valueFrom:
-              secretKeyRef:
-                name: immich-postgres-app
-                key: dbname
 
 immich:
   persistence:
@@ -53,6 +36,27 @@ machine-learning:
       accessMode: ReadWriteOnce
 
 server:
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            DB_HOSTNAME: immich-postgres-rw
+            DB_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-app
+                  key: username
+            DB_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-app
+                  key: password
+            DB_DATABASE_NAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-app
+                  key: dbname
   ingress:
     main:
       enabled: false
