@@ -2,7 +2,6 @@ tunnel: rpi5
 credentials-file: /etc/cloudflared/credentials/credentials.json
 metrics: 0.0.0.0:2000
 no-autoupdate: true
-protocol: http2
 # Enhanced logging configuration
 loglevel: debug # Increased log level for more details
 transport-loglevel: debug

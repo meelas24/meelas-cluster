@@ -1,20 +1,20 @@
-# Ignore all .DS_Store files anywhere in the repository
+
+# Added by gh-memory-bank
+*/chatmodes/
+chatmodes/
 **/.DS_Store
 .DS_Store
+# Ignore all .DS_Store files anywhere in the repository
 infrastructure/controllers/argocd/charts/*
-/monitoring/prometheus-stack/charts
+*/instructions/
+instructions/
+kubeconfig-remote.yaml
 /monitoring/loki-stack/charts
 /monitoring/minio/charts
+/monitoring/prometheus-stack/charts
 /monitoring/promtail/charts
 /monitoring/tempo/charts
 /monitoring/thanos/charts
-
-# Added by gh-memory-bank
-chatmodes/
-instructions/
-*/chatmodes/
-*/instructions/
-
+script.sh
 setup_notes.md
 tunnel-creds.json
-script.sh
