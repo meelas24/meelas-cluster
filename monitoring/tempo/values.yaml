@@ -17,7 +17,7 @@ tempo:
 
 persistence:
   enabled: true
-  storageClassName: longhorn
+  storageClassName: zfs-localpv
   size: 2Gi
   accessModes:
     - ReadWriteOnce

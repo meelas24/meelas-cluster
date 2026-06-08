@@ -37,7 +37,7 @@ singleBinary:
       memory: 512Mi
   persistence:
     enabled: true
-    storageClass: longhorn
+    storageClass: zfs-localpv
     size: 5Gi
 
 # Disable components not needed in SingleBinary mode
