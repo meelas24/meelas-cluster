@@ -4,6 +4,8 @@ controllers:
       main:
         image:
           tag: v2.6.3
+        env:
+          REDIS_HOSTNAME: dragonfly.dragonfly.svc
 
 immich:
   persistence:
@@ -11,20 +13,7 @@ immich:
       existingClaim: immich-library
 
 valkey:
-  enabled: true
-  controllers:
-    main:
-      containers:
-        main:
-          image:
-            tag: 9.1-alpine
-  persistence:
-    data:
-      enabled: true
-      size: 1Gi
-      type: persistentVolumeClaim
-      storageClass: zfs-localpv
-      accessMode: ReadWriteOnce
+  enabled: false
 
 machine-learning:
   persistence:
