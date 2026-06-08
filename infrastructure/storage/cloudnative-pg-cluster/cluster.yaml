@@ -11,12 +11,13 @@ spec:
   storage:
     storageClass: zfs-localpv
     size: 10Gi
+  postgresql:
+    shared_preload_libraries:
+      - vchord.so
   bootstrap:
     initdb:
       database: app
       owner: app
-      postInitApplicationSQL:
-        - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
   affinity:
     tolerations:
       - key: node-role.kubernetes.io/control-plane
