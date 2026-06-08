@@ -179,7 +179,7 @@ grafana:
   # Grafana configuration
   grafana.ini:
     server:
-      root_url: https://grafana.vanillax.xyz
+      root_url: https://grafana.saleem.us
     security:
       allow_embedding: true
       cookie_secure: true

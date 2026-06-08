@@ -9,7 +9,7 @@ spec:
     namespace: gateway
     sectionName: https
   hostnames:
-  - "alertmanager.vanillax.xyz"
+  - "alertmanager.saleem.us"
   rules:
   - matches:
     - path:

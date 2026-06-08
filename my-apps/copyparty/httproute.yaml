@@ -9,7 +9,7 @@ spec:
     namespace: gateway
     sectionName: https
   hostnames:
-  - "copyparty.vanillax.xyz"
+  - "copyparty.saleem.us"
   rules:
   - matches:
     - path:

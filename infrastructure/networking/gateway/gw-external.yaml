@@ -12,17 +12,17 @@ spec:
     - name: http
       protocol: HTTP
       port: 80
-      hostname: "*.vanillax.xyz"
+      hostname: "*.saleem.us"
       allowedRoutes:
         namespaces:
           from: All
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.vanillax.xyz"
+      hostname: "*.saleem.us"
       tls:
         certificateRefs:
-          - name: cert-vanillax
+          - name: cert-saleem
             kind: Secret
             group: "" # required
       allowedRoutes:
