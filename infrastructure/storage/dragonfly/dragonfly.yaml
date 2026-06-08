@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dragonfly
+  namespace: dragonfly
+  labels:
+    app: dragonfly
+spec:
+  replicas: 1
+  serviceName: dragonfly
+  selector:
+    matchLabels:
+      app: dragonfly
+  template:
+    metadata:
+      labels:
+        app: dragonfly
+    spec:
+      containers:
+        - name: dragonfly
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.25.1
+          ports:
+            - containerPort: 6379
+              name: redis
+          args:
+            - --port=6379
+            - --save_schedule=*:05
+            - --dir=/data
+            - --dbfilename=dragonfly
+            - --keys_output_limit=8192
+            - --dbnum=16
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      securityContext:
+        fsGroup: 1000
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: zfs-localpv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dragonfly
+  namespace: dragonfly
+  labels:
+    app: dragonfly
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+      name: redis
+  selector:
+    app: dragonfly
+  clusterIP: None
