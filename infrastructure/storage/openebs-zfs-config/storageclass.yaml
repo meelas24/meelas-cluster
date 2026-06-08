@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: zfs-localpv
   annotations:
+    argocd.argoproj.io/sync-wave: "1"
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: zfs.csi.openebs.io
 allowVolumeExpansion: true

@@ -3,8 +3,6 @@ kind: Kustomization
 namespace: openebs-zfs
 resources:
   - namespace.yaml
-  - zfspool.yaml
-  - storageclass.yaml
 helmCharts:
   - name: zfs-localpv
     repo: https://openebs.github.io/zfs-localpv

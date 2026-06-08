@@ -2,6 +2,8 @@ apiVersion: zfs.openebs.io/v1
 kind: ZFSPool
 metadata:
   name: data-pool
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   poolName: Data
   nodeName: meelas
