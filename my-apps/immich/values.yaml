@@ -1,0 +1,58 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          tag: v2.6.3
+        env:
+          DB_HOSTNAME: immich-postgres-rw
+          DB_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: immich-postgres-app
+                key: username
+          DB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: immich-postgres-app
+                key: password
+          DB_DATABASE_NAME:
+            valueFrom:
+              secretKeyRef:
+                name: immich-postgres-app
+                key: dbname
+
+immich:
+  persistence:
+    library:
+      existingClaim: immich-library
+
+valkey:
+  enabled: true
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            tag: 9.1-alpine
+  persistence:
+    data:
+      enabled: true
+      size: 1Gi
+      type: persistentVolumeClaim
+      storageClass: zfs-localpv
+      accessMode: ReadWriteOnce
+
+machine-learning:
+  persistence:
+    cache:
+      enabled: true
+      size: 10Gi
+      type: persistentVolumeClaim
+      storageClass: zfs-localpv
+      accessMode: ReadWriteOnce
+
+server:
+  ingress:
+    main:
+      enabled: false
