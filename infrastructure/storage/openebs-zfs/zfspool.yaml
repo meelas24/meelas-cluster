@@ -1,0 +1,7 @@
+apiVersion: zfs.openebs.io/v1
+kind: ZFSPool
+metadata:
+  name: data-pool
+spec:
+  poolName: Data
+  nodeName: meelas

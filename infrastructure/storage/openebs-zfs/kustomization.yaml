@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: openebs-zfs
+resources:
+  - namespace.yaml
+  - zfspool.yaml
+  - storageclass.yaml
+helmCharts:
+  - name: zfs-localpv
+    repo: https://openebs.github.io/zfs-localpv
+    version: 2.10.0
+    releaseName: openebs-zfs
+    namespace: openebs-zfs
+    valuesFile: values.yaml
+    includeCRDs: true
