@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: immich
 resources:
   - namespace.yaml
-  - postgres-cluster.yaml
   - library-pvc.yaml
   - httproute.yaml
 helmCharts:
