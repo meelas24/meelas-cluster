@@ -10,7 +10,7 @@ metadata:
   labels:
     app.kubernetes.io/name: cilium
     release: prometheus
-    prometheus: prometheus-kube-prometheus-stack-prometheus
+    prometheus: prometheus-kube-prometheus-prometheus
 spec:
   selector:
     matchLabels:
@@ -32,7 +32,7 @@ metadata:
   labels:
     app.kubernetes.io/name: cilium-operator
     release: prometheus
-    prometheus: prometheus-kube-prometheus-stack-prometheus
+    prometheus: prometheus-kube-prometheus-prometheus
 spec:
   selector:
     matchLabels:
@@ -54,7 +54,7 @@ metadata:
   labels:
     app.kubernetes.io/name: gateway-api
     release: prometheus
-    prometheus: prometheus-kube-prometheus-stack-prometheus
+    prometheus: prometheus-kube-prometheus-prometheus
 spec:
   selector:
     matchLabels:
