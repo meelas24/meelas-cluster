@@ -9,6 +9,7 @@ spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17
   primaryUpdateStrategy: unsupervised
   storage:
+    persistentVolumeReclaimPolicy: Retain
     storageClass: zfs-localpv
     size: 10Gi
   postgresql:
