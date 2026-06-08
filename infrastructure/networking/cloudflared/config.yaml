@@ -27,11 +27,9 @@ ingress:
         - name: X-Forwarded-For
         - name: Accept-Language
         - name: User-Agent
-  - hostname: "*.saleem.us"
-    service: https://cilium-gateway-gateway-external.gateway.svc.cluster.local:443
+  - hostname: search.saleem.us
+    service: http://searxng.searxng.svc.cluster.local:8080
     originRequest:
-      noTLSVerify: true
-      originServerName: "*.saleem.us"
       logHeaders: true
       headers:
         - name: CF-Connecting-IP
@@ -56,11 +54,36 @@ ingress:
         - name: CF-Bot-Score
         - name: CF-Challenge
         - name: CF-Bot-Management-Tag
-  - hostname: saleem.us
-    service: https://cilium-gateway-gateway-external.gateway.svc.cluster.local:443
+  - hostname: photos.saleem.us
+    service: http://immich-server.immich.svc.cluster.local:2283
     originRequest:
-      noTLSVerify: true
-      originServerName: saleem.us
+      logHeaders: true
+      headers:
+        - name: CF-Connecting-IP
+        - name: X-Real-IP
+        - name: CF-IPCountry
+        - name: CF-Ray
+        - name: CF-Visitor
+        - name: CF-Device-Type
+        - name: CF-IPCITY
+        - name: CF-IPCONTINENT
+        - name: CF-IPLATITUDE
+        - name: CF-IPLONGITUDE
+        - name: CF-IPREGION
+        - name: X-Forwarded-For
+        - name: Accept-Language
+        - name: User-Agent
+        - name: True-Client-IP
+        - name: CF-IPCountry
+        - name: CF-RAY
+        - name: CF-Worker
+        - name: CF-Client-Bot
+        - name: CF-Bot-Score
+        - name: CF-Challenge
+        - name: CF-Bot-Management-Tag
+  - hostname: it-tools.saleem.us
+    service: http://it-tools.it-tools.svc.cluster.local:8080
+    originRequest:
       logHeaders: true
       headers:
         - name: CF-Connecting-IP
