@@ -1,0 +1,13 @@
+replicaCount: 1
+
+crds:
+  create: true
+
+config:
+  clusterWide: true
+  data: {}
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
