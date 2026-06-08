@@ -1,28 +1,6 @@
 # ArgoCD metrics are handled by the argo-cd Helm chart's built-in ServiceMonitors
 # (enabled via per-component metrics.serviceMonitor.enabled in ArgoCD values.yaml)
 ---
-# ServiceMonitor for Longhorn
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: longhorn-metrics
-  namespace: kube-prometheus-stack
-  labels:
-    app.kubernetes.io/name: longhorn
-    release: prometheus
-    prometheus: prometheus-kube-prometheus-stack-prometheus
-spec:
-  selector:
-    matchLabels:
-      app: longhorn-manager
-  namespaceSelector:
-    matchNames:
-      - longhorn-system
-  endpoints:
-    - port: manager
-      interval: 30s
-      path: /metrics
----
 # ServiceMonitor for Cilium
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

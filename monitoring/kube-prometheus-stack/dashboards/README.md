@@ -65,7 +65,7 @@ monitoring/kube-prometheus-stack/
 
 - **File names**: `[descriptive-name]-configmap.yaml`
 - **ConfigMap names**: `dashboard-[descriptive-name]`
-- **Use kebab-case**: `longhorn-storage-configmap.yaml`
+- **Use kebab-case**: `zfs-storage-configmap.yaml`
 - **Be descriptive**: `node-exporter-full-configmap.yaml`
 
 **Examples:**

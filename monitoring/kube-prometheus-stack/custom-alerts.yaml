@@ -87,26 +87,6 @@ spec:
           annotations:
             summary: "ArgoCD Application {{ $labels.name }} is unhealthy"
             description: "ArgoCD Application {{ $labels.name }} in project {{ $labels.project }} is in an unhealthy state."
-    # Storage Alerts (Longhorn)
-    - name: storage.longhorn
-      interval: 30s
-      rules:
-        - alert: LonghornVolumeHealthy
-          expr: longhorn_volume_state{state!~"attached|detached"} > 0
-          for: 5m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Longhorn volume {{ $labels.volume }} is unhealthy"
-            description: "Longhorn volume {{ $labels.volume }} is in state {{ $labels.state }}"
-        - alert: LonghornNodeStorageSpaceLow
-          expr: (longhorn_node_storage_usage_bytes / longhorn_node_storage_capacity_bytes) * 100 > 90
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Longhorn node {{ $labels.node }} storage space is low"
-            description: "Longhorn node {{ $labels.node }} storage usage is above 90% (current value: {{ printf \"%.2f\" $value }}%)"
     # Prometheus Stack Health
     - name: monitoring.stack.health
       interval: 30s

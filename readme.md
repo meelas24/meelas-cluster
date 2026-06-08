@@ -32,9 +32,8 @@ This starter kit provides a production-ready foundation for deploying applicatio
 
 - Kubernetes cluster (tested with K3s v1.35.1+k3s1)
 - Linux host (ARM or x86) with:
-  - Storage support (Longhorn - works with standard directories or dedicated disks)
+  - ZFS support (OpenEBS ZFS LocalPV - works with dedicated ZFS pools/datasets)
   - NFS and CIFS support (optional)
-  - Open-iSCSI (required for Longhorn)
 - Cloudflare account (for DNS and Tunnel)
 - Local DNS setup (one of the following):
   - Local DNS server ([AdGuard Home setup guide](docs/adguard-home-setup.md))
@@ -60,7 +59,7 @@ graph TD
         N --> Cloudflared
         N --> Gateway
         
-        S --> Longhorn
+        S --> OpenEBS-ZFS
         
         C --> CertManager
     end
@@ -106,14 +105,11 @@ graph TD
 
 ### 1. System Setup
 ```bash
-# Essential packages for Longhorn storage
+# Essential packages for storage
 sudo apt update && sudo apt install -y \
-  open-iscsi \
+  zfsutils-linux \
   nfs-common \
   cifs-utils  # Optional - only if using SMB/CIFS shares
-
-# Enable and start iSCSI (required for Longhorn)
-sudo systemctl enable --now iscsid
 
 # Critical kernel modules for Cilium
 sudo modprobe iptable_raw xt_socket
@@ -267,7 +263,7 @@ The monitoring stack uses kube-prometheus-stack Helm chart deployed via Argo CD,
 - **Prometheus**: `https://prometheus.yourdomain.xyz`
 - **AlertManager**: `https://alertmanager.yourdomain.xyz`
 
-**Storage (with Longhorn):**
+**Storage (with OpenEBS ZFS LocalPV):**
 - **Prometheus**: `10Gi` with 7-day retention
 - **Grafana**: `1Gi` for dashboards and config
 - **AlertManager**: `512Mi` for alert state
@@ -428,7 +424,7 @@ cilium connectivity test --all-flows
 | **Monitoring** | Prometheus, Grafana, Loki, Tempo    |
 | **Privacy**    | SearXNG, LibReddit                  |
 | **Infra**      | Cilium, Gateway API, Cloudflared    |
-| **Storage**    | Longhorn                            |
+| **Storage**    | OpenEBS ZFS LocalPV                 |
 | **Security**   | cert-manager, Argo CD Projects      |
 
 ## 🤝 Contributing
@@ -566,29 +562,3 @@ If LoadBalancer IPs aren't advertising properly:
 1. Verify physical interface name matches in CiliumL2AnnouncementPolicy
 2. Check interface exists on all nodes: `ip link show dev enp1s0`
 3. Ensure Cilium pods are running: `kubectl get pods -n kube-system -l k8s-app=cilium`
-
-**Longhorn Volume Mount Issues:**
-```bash
-# PROBLEM: Volumes fail to mount with "device busy" or multipath conflicts
-# COMMON CAUSE: Linux multipath daemon interfering with Longhorn device management
-
-# Check if multipathd is running (often enabled by default on Ubuntu/Debian)
-systemctl status multipathd
-
-# SOLUTION: Disable multipath daemon on all nodes
-sudo systemctl disable --now multipathd
-
-# Verify it's stopped
-systemctl is-active multipathd  # Should return "inactive"
-
-# After disabling multipathd, restart kubelet to clear any cached device state
-sudo systemctl restart k3s  # For K3s
-# OR
-sudo systemctl restart kubelet  # For standard Kubernetes
-
-# Check Longhorn volume status after restart
-kubectl get volumes -n longhorn-system
-kubectl get pods -n longhorn-system
-
-# Reference: https://longhorn.io/kb/troubleshooting-volume-with-multipath/
-```

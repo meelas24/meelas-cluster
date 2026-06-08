@@ -10,7 +10,6 @@ resources:
   - http-route-alertmanager.yaml
   - custom-alerts.yaml
   - custom-servicemonitors.yaml
-  - longhorn-alerts.yaml
   - network-policy.yaml
   - dashboards/k3s-cluster-overview-configmap.yaml
   - dashboards/dashboard-16450-configmap.yaml
