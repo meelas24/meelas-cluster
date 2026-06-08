@@ -27,7 +27,7 @@ spec:
         fsGroup: 977
       containers:
         - name: searxng
-          image: searxng/searxng:2024.4.29-e45a7cc06
+          image: searxng/searxng:2026.6.8-63f264220
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
