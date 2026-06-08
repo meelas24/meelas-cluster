@@ -18,3 +18,4 @@ kubeconfig-remote.yaml
 script.sh
 setup_notes.md
 tunnel-creds.json
+.claude/
