@@ -78,7 +78,7 @@ repoServer:
     - name: age-key
       secret:
         secretName: sops-age-key
-        defaultMode: 0400
+        defaultMode: 0444
   resources:
     requests:
       cpu: 100m
