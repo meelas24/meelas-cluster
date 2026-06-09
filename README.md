@@ -27,6 +27,7 @@ graph TD
         
         N --> Cilium
         N --> Cloudflared
+        N --> CloudflareDNS
         N --> Gateway
         
         S --> OpenEBS-ZFS
@@ -59,6 +60,7 @@ graph TD
 | **Cilium** | CNI, kube-proxy replacement, L2 announcements, Hubble, Gateway API integration | 1.19.1 |
 | **Gateway API** | Internal (10.0.50.202) and external (10.0.50.200) gateways with wildcard TLS | Cilium-based |
 | **Cloudflared** | DaemonSet for Cloudflare Tunnel (tunnel `rpi5`) | 2026.2.0 |
+| **external-dns** | Cloudflare DNS management via DNSEndpoint CRDs | 1.16.2 |
 | **cert-manager** | Let's Encrypt DNS01 via Cloudflare, ClusterIssuer `cloudflare-cluster-issuer` | 1.19.4 |
 | **Argo CD** | GitOps with kustomize-build-with-helm CMP, two AppProjects | 9.4.5 |
 | **OpenEBS ZFS LocalPV** | Default StorageClass `zfs-localpv`, pool `Data`, lz4 compression | 2.10.0 |
@@ -211,9 +213,12 @@ kubectl create secret generic tunnel-credentials \
   --namespace=cloudflared \
   --from-file=credentials.json=tunnel-creds.json
 
-# Configure DNS
-TUNNEL_ID=$(cloudflared tunnel list | grep $TUNNEL_NAME | awk '{print $1}')
-cloudflared tunnel route dns $TUNNEL_ID "*.$DOMAIN"
+# DNS is now managed by external-dns via DNSEndpoint CRDs.
+# Delete old wildcard DNS records from Cloudflare dashboard.
+
+# Create external-dns secret (must have DNS edit permissions)
+kubectl create secret generic cloudflare-dns -n networking \
+  --from-literal=api-token=$CLOUDFLARE_API_TOKEN
 
 # Create cert-manager secrets
 kubectl create namespace cert-manager

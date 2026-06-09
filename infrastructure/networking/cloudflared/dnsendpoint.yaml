@@ -1,0 +1,19 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: cloudflare-tunnel
+  namespace: cloudflared
+spec:
+  endpoints:
+    - dnsName: external.saleem.us
+      recordType: CNAME
+      targets:
+        - "147316a6-8686-4981-ba0a-f351df46c3b2.cfargotunnel.com"
+    - dnsName: photos.saleem.us
+      recordType: CNAME
+      targets:
+        - external.saleem.us
+    - dnsName: headlamp.saleem.us
+      recordType: CNAME
+      targets:
+        - external.saleem.us

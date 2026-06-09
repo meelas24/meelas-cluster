@@ -8,6 +8,7 @@ namespace: cloudflared
 resources:
   - ns.yaml
   - deployment.yaml
+  - dnsendpoint.yaml
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:

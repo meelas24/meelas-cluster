@@ -1,0 +1,24 @@
+provider: cloudflare
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-dns
+        key: api-token
+sources:
+  - crd
+  - gateway-httproute
+policy: sync
+txtPrefix: k8s.
+txtOwnerId: default
+domainFilters:
+  - saleem.us
+cloudflare:
+  proxied: true
+extraArgs:
+  - --cloudflare-dns-records-per-page=1000
+  - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
+  - --crd-source-kind=DNSEndpoint
+  - --gateway-name=gateway-external
+serviceMonitor:
+  enabled: true
