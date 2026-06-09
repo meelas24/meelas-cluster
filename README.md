@@ -169,6 +169,53 @@ kubectl -n argocd patch secret argocd-secret \
   -p '{"stringData": { "admin.password": "<YOUR_BCRYPT_HASH>", "admin.passwordMtime": "'$(date +%FT%T%Z)'" }}'
 ```
 
+### Install Prerequisites
+
+Install [mise](https://mise.jdx.dev) to manage required tool versions:
+```bash
+curl https://mise.jdx.dev/install.sh | sh
+mise install
+```
+
+This installs `sops`, `age`, `kubectl`, `helm`, and `kustomize` at the versions specified in `.mise.toml`.
+
+### SOPS Secret Management
+
+Secrets are encrypted with [SOPS](https://github.com/getsops/sops) using [age](https://age-encryption.org).
+
+#### Generate an age key (first time only)
+
+```bash
+mkdir -p ~/.config/sops/age
+age-keygen -o ~/.config/sops/age/keys.txt
+```
+
+This outputs your public key. Add it to `.sops.yaml` at the repo root:
+```yaml
+creation_rules:
+  - path_regex: infrastructure/.*\.sops\.ya?ml
+    encrypted_regex: "^(data|stringData)$"
+    mac_only_encrypted: true
+    age: "age1..."  # your public key here
+```
+
+#### Seed the age key in the cluster
+
+Argo CD needs the age private key to decrypt secrets during builds:
+```bash
+kubectl create secret generic sops-age-key \
+  --namespace argocd \
+  --from-file=keys.txt=~/.config/sops/age/keys.txt
+```
+
+#### Edit an encrypted secret
+
+```bash
+sops infrastructure/networking/cloudflare-dns/secret.sops.yaml
+```
+
+This opens the decrypted file in your editor. Save and exit to re-encrypt.
+
 ### Setup CloudFlare and Certificates
 ```bash
 # REQUIRED BROWSER STEPS FIRST:
@@ -216,9 +263,10 @@ kubectl create secret generic tunnel-credentials \
 # DNS is now managed by external-dns via DNSEndpoint CRDs.
 # Delete old wildcard DNS records from Cloudflare dashboard.
 
-# Create external-dns secret (must have DNS edit permissions)
-kubectl create secret generic cloudflare-dns -n networking \
-  --from-literal=api-token=$CLOUDFLARE_API_TOKEN
+# Create external-dns secret via SOPS:
+cd infrastructure/networking/cloudflare-dns
+sops --set '["stringData"]["api-token"] "'"$CLOUDFLARE_API_TOKEN"'"' secret.sops.yaml
+cd -
 
 # Create cert-manager secrets
 kubectl create namespace cert-manager
