@@ -11,6 +11,7 @@ helmCharts:
     includeCRDs: true
 
 resources:
+  - ns.yaml
   - secret.sops.yaml
 
 generatorOptions:
