@@ -6,7 +6,7 @@ helmCharts:
     repo: https://kubernetes-sigs.github.io/external-dns
     version: 1.21.1 # renovate: helm=external-dns/external-dns
     releaseName: external-dns
-    namespace: networking
+    namespace: cloudflare-dns
     valuesFile: values.yaml
     includeCRDs: true
 
