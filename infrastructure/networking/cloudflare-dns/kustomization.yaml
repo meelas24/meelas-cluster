@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: external-dns
     repo: https://kubernetes-sigs.github.io/external-dns
-    version: 1.16.2 # renovate: github-releases=kubernetes-sigs/external-dns
+    version: 1.21.1 # renovate: helm=external-dns/external-dns
     releaseName: external-dns
     namespace: networking
     valuesFile: values.yaml
