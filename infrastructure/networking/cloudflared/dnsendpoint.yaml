@@ -9,11 +9,4 @@ spec:
       recordType: CNAME
       targets:
         - "147316a6-8686-4981-ba0a-f351df46c3b2.cfargotunnel.com"
-    - dnsName: photos.saleem.us
-      recordType: CNAME
-      targets:
-        - external.saleem.us
-    - dnsName: headlamp.saleem.us
-      recordType: CNAME
-      targets:
-        - external.saleem.us
+
