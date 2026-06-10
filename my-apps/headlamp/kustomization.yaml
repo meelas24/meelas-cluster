@@ -8,6 +8,7 @@ labels:
 resources:
   - namespace.yaml
   - httproute.yaml
+  - dnsendpoint.yaml
   - serviceaccount.yaml
   - token-secret.yaml
 helmCharts:
