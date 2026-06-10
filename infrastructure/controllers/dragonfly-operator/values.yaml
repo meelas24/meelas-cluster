@@ -1,0 +1,5 @@
+replicaCount: 1
+serviceMonitor:
+  enabled: false
+grafanaDashboard:
+  enabled: false
