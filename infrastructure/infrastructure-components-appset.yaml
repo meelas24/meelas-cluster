@@ -12,6 +12,16 @@ spec:
       revision: HEAD
       directories:
       - path: infrastructure/networking/*
+      - exclude: true
+        path: infrastructure/networking/cloudflare-dns
+      - exclude: true
+        path: infrastructure/networking/cloudflared
+      - exclude: true
+        path: infrastructure/networking/adguard-home
+      - exclude: true
+        path: infrastructure/networking/network
+      - exclude: true
+        path: infrastructure/networking/apps
       - path: infrastructure/storage/*
       - path: infrastructure/controllers/*
   template:

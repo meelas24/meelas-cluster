@@ -1,0 +1,56 @@
+fullnameOverride: adguard-home
+
+controllers:
+  adguard-home:
+    strategy: Recreate
+    containers:
+      app:
+        image:
+          repository: adguard/adguardhome
+          tag: v0.107.74
+        args:
+          - --config
+          - /opt/adguardhome/conf/AdGuardHome.yaml
+          - --work-dir
+          - /opt/adguardhome/work
+          - --no-check-update
+
+service:
+  app:
+    controller: adguard-home
+    type: LoadBalancer
+    ports:
+      http:
+        port: 80
+  dns:
+    controller: adguard-home
+    type: LoadBalancer
+    ports:
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+        targetPort: 53
+      dns-udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+        targetPort: 53
+
+persistence:
+  config:
+    enabled: true
+    type: pvc
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    retain: true
+    globalMounts:
+      - path: /opt/adguardhome/conf
+  data:
+    enabled: true
+    type: pvc
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    retain: true
+    globalMounts:
+      - path: /opt/adguardhome/work

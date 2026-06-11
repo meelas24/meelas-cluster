@@ -4,9 +4,8 @@ metadata:
   name: cloudflared-daemonset
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
-namespace: cloudflared
+namespace: network
 resources:
-  - ns.yaml
   - deployment.yaml
   - dnsendpoint.yaml
   - secret.sops.yaml

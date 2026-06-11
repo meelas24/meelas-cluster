@@ -1,17 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: network
 
 helmCharts:
   - name: external-dns
     repo: https://kubernetes-sigs.github.io/external-dns
     version: 1.21.1 # renovate: helm=external-dns/external-dns
     releaseName: external-dns
-    namespace: cloudflare-dns
+    namespace: network
     valuesFile: values.yaml
     includeCRDs: true
 
 resources:
-  - ns.yaml
   - secret.sops.yaml
 
 generatorOptions:
