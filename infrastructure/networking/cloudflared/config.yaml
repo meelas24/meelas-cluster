@@ -34,7 +34,7 @@ ingress:
         - name: CF-Challenge
         - name: CF-Bot-Management-Tag
   - hostname: headlamp.saleem.us
-    service: http://headlamp.kube-system.svc.cluster.local:80
+    service: http://headlamp.headlamp.svc.cluster.local:80
     originRequest:
       logHeaders: true
       headers:
