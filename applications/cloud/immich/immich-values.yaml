@@ -1,10 +1,9 @@
-image:
-  tag: v2.6.3
-
 controllers:
   main:
     containers:
       main:
+        image:
+          tag: v2.6.3
         env:
           REDIS_HOSTNAME: dragonfly.databases.svc.cluster.local
           REDIS_PORT: "6379"
@@ -19,27 +18,27 @@ server:
             DB_HOSTNAME:
               valueFrom:
                 secretKeyRef:
-                  name: immich-db
+                  name: immich-db-immich-user
                   key: HOST
             DB_USERNAME:
               valueFrom:
                 secretKeyRef:
-                  name: immich-db
+                  name: immich-db-immich-user
                   key: LOGIN
             DB_PASSWORD:
               valueFrom:
                 secretKeyRef:
-                  name: immich-db
+                  name: immich-db-immich-user
                   key: PASSWORD
             DB_DATABASE_NAME:
               valueFrom:
                 secretKeyRef:
-                  name: immich-db
+                  name: immich-db-immich-user
                   key: DATABASE_NAME
             DB_PORT:
               valueFrom:
                 secretKeyRef:
-                  name: immich-db
+                  name: immich-db-immich-user
                   key: PORT
 
 machine-learning:
