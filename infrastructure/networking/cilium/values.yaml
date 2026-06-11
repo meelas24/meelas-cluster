@@ -44,6 +44,8 @@ k8sClientRateLimit:
   burst: 200
 l2announcements:
   enabled: true
+l2NeighDiscovery:
+  enabled: true
 externalIPs:
   enabled: true
 loadBalancer:
