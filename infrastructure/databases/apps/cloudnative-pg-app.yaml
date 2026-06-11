@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudnative-pg
+spec:
+  project: infrastructure
+  source:
+    plugin:
+      name: kustomize-build-with-helm
+    repoURL: https://github.com/meelas24/meelas-cluster
+    targetRevision: HEAD
+    path: infrastructure/databases/cloudnative-pg
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: databases
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+    syncOptions:
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    - Replace=false
+    - IgnoreMissingTemplate=true
