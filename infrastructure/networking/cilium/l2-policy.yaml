@@ -2,7 +2,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
   name: main-l2-policy
-  namespace: cilium
+  namespace: network
 spec:
   interfaces:
     - eth.*

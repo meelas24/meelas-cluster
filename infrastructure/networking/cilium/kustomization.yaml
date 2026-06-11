@@ -12,5 +12,5 @@ helmCharts:
     version: 1.19.1 # renovate: github-releases=cilium/cilium
     releaseName: "cilium"
     includeCRDs: true
-    namespace: cilium
+    namespace: network
     valuesFile: values.yaml

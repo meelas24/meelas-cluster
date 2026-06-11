@@ -12,7 +12,7 @@ originRequest:
 
 ingress:
   - hostname: "*.saleem.us"
-    service: https://cilium-gateway-gateway-external.gateway.svc.cluster.local
+    service: https://cilium-gateway-gateway-external.network.svc.cluster.local
   - hostname: "saleem.us"
-    service: https://cilium-gateway-gateway-external.gateway.svc.cluster.local
+    service: https://cilium-gateway-gateway-external.network.svc.cluster.local
   - service: http_status:404

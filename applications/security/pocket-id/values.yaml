@@ -47,7 +47,7 @@ route:
       - pid.saleem.us
     parentRefs:
       - name: gateway-external
-        namespace: gateway
+        namespace: network
         sectionName: https
 persistence:
   data:

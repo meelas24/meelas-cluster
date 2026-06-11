@@ -8,7 +8,7 @@ spec:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: gateway-internal
-      namespace: gateway
+      namespace: network
   hostnames:
     - "argocd.saleem.us"
   rules:
