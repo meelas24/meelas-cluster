@@ -1,0 +1,19 @@
+apiVersion: db.movetokube.com/v1alpha1
+kind: Postgres
+metadata:
+  name: immich-db
+  namespace: cloud
+spec:
+  database: immich
+  dropOnDelete: false
+---
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: immich-user
+  namespace: cloud
+spec:
+  role: immich
+  database: immich-db
+  secretName: immich-db
+  privileges: OWNER

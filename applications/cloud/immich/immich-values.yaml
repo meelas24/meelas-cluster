@@ -1,0 +1,58 @@
+image:
+  tag: v2.6.3
+
+controllers:
+  main:
+    containers:
+      main:
+        env:
+          REDIS_HOSTNAME: dragonfly.databases.svc.cluster.local
+          REDIS_PORT: "6379"
+          IMMICH_MACHINE_LEARNING_URL: http://immich-machine-learning.cloud:3003
+
+server:
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            DB_HOSTNAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: HOST
+            DB_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: LOGIN
+            DB_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: PASSWORD
+            DB_DATABASE_NAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: DATABASE_NAME
+            DB_PORT:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: PORT
+
+machine-learning:
+  persistence:
+    cache:
+      enabled: true
+      size: 10Gi
+      type: emptyDir
+
+immich:
+  persistence:
+    library:
+      existingClaim: immich-media
+
+valkey:
+  enabled: false

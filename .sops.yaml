@@ -1,6 +1,6 @@
 ---
 creation_rules:
-  - path_regex: infrastructure/.*\.sops\.ya?ml
+  - path_regex: (infrastructure|applications)/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     mac_only_encrypted: true
     age: "age14c4q9365tr9lrssdysjqamj4nxw82uexw7hmfnfrmegmjnu5y5kq0x97up"

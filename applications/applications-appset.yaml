@@ -14,6 +14,8 @@ spec:
       - path: applications/*/*
       - exclude: true
         path: applications/applications-appset.yaml
+      - exclude: true
+        path: applications/cloud/immich
   template:
     metadata:
       name: '{{path.basename}}'
