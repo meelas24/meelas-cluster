@@ -7,7 +7,6 @@ env:
         key: api-token
 sources:
   - crd
-  - gateway-httproute
 policy: sync
 txtPrefix: k8s.
 txtOwnerId: default
@@ -20,6 +19,5 @@ extraArgs:
   - --cloudflare-proxied
   - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
   - --crd-source-kind=DNSEndpoint
-  - --gateway-name=gateway-external
 serviceMonitor:
   enabled: true
