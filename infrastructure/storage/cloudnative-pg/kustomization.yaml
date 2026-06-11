@@ -1,6 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-    namespace: cloudnative-pg
+namespace: cloudnative-pg
 resources:
   - namespace.yaml
 helmCharts:
@@ -8,6 +8,6 @@ helmCharts:
     repo: https://cloudnative-pg.github.io/charts
     version: 0.28.2
     releaseName: cnpg
-namespace: cloudnative-pg
+    namespace: cloudnative-pg
     valuesFile: values.yaml
     includeCRDs: true
