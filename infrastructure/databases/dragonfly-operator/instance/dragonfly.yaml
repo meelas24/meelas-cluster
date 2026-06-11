@@ -1,0 +1,30 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: dragonfly
+  namespace: databases
+spec:
+  replicas: 1
+  image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.31.1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  serviceSpec:
+    metadata:
+      annotations:
+        lbipam.cilium.io/ips: 10.0.50.230
+    spec:
+      type: LoadBalancer
+  snapshot:
+    cron: "0 */6 * * *"
+    persistentVolumeClaimSpec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: zfs-localpv
