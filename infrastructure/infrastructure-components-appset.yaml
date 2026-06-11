@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: infrastructure-components
+  namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
@@ -33,15 +34,16 @@ spec:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - ServerSideApply=true
+        - RespectIgnoreDifferences=true
+        - ApplyOutOfSyncOnly=true
+        - Replace=false
+        - IgnoreMissingTemplate=true
         retry:
           limit: 5
           backoff:
             duration: 5s
             factor: 2
             maxDuration: 3m
-        syncOptions:
-        - ServerSideApply=true
-        - RespectIgnoreDifferences=true
-        - ApplyOutOfSyncOnly=true
-        - Replace=false
-        - IgnoreMissingTemplate=true
