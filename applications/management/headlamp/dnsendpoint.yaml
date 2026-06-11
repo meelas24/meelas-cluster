@@ -3,6 +3,8 @@ kind: DNSEndpoint
 metadata:
   name: headlamp
   namespace: headlamp
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   endpoints:
     - dnsName: headlamp.saleem.us
