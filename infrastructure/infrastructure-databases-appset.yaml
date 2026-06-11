@@ -1,37 +1,32 @@
-# my-apps/myapplications-appset.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: applications
-  namespace: argocd
+  name: infrastructure-databases
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-2"
 spec:
   generators:
   - git:
-      repoURL: https://github.com/meelas24/meelas-cluster.git
+      repoURL: https://github.com/meelas24/meelas-cluster
       revision: HEAD
       directories:
-      - path: my-apps/*
-      - exclude: true
-        path: my-apps/myapplications-appset.yaml
+      - path: infrastructure/databases/*
   template:
     metadata:
-      # Changed from 'app-{{path.basename}}' to just '{{path.basename}}'
       name: '{{path.basename}}'
       labels:
-        type: application
+        type: infrastructure
     spec:
-      project: applications
+      project: infrastructure
       source:
         plugin:
           name: kustomize-build-with-helm
-        repoURL: https://github.com/meelas24/meelas-cluster.git
+        repoURL: https://github.com/meelas24/meelas-cluster
         targetRevision: HEAD
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: databases
       syncPolicy:
         automated:
           prune: true
