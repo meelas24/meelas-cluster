@@ -16,6 +16,8 @@ spec:
         path: applications/applications-appset.yaml
       - exclude: true
         path: applications/cloud/immich
+      - exclude: true
+        path: applications/security/pocket-id
   template:
     metadata:
       name: '{{path.basename}}'

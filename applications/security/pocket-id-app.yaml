@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pocket-id
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: applications
+  source:
+    plugin:
+      name: kustomize-build-with-helm
+    repoURL: https://github.com/meelas24/meelas-cluster.git
+    targetRevision: HEAD
+    path: applications/security/pocket-id
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: security
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    - Replace=false
+    - IgnoreMissingTemplate=true
