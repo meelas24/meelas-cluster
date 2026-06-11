@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - db.movetokube.com_postgres_crd.yaml
+  - db.movetokube.com_postgresusers_crd.yaml
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "-10"
