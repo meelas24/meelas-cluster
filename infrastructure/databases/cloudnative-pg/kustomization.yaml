@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: databases
 resources:
   - namespace.yaml
+  - clusters
 helmCharts:
   - name: cloudnative-pg
     repo: https://cloudnative-pg.github.io/charts
