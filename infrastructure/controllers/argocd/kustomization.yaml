@@ -5,6 +5,7 @@ resources:
   - ns.yaml
   - http-route.yaml
   - projects.yaml
+  - bootstrap-apps.yaml
 
 helmCharts:
   - name: argo-cd
