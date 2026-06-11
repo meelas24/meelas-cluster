@@ -21,6 +21,8 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - tunnel
+            - --edge-ip-version
+            - 4
             - --protocol
             - http2
             - --config
