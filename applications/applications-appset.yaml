@@ -1,4 +1,3 @@
-# my-apps/myapplications-appset.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -12,12 +11,11 @@ spec:
       repoURL: https://github.com/meelas24/meelas-cluster.git
       revision: HEAD
       directories:
-      - path: my-apps/*
+      - path: applications/*/*
       - exclude: true
-        path: my-apps/myapplications-appset.yaml
+        path: applications/applications-appset.yaml
   template:
     metadata:
-      # Changed from 'app-{{path.basename}}' to just '{{path.basename}}'
       name: '{{path.basename}}'
       labels:
         type: application
