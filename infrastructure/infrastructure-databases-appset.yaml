@@ -1,43 +1,39 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: applications
+  name: infrastructure-databases
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-2"
 spec:
   generators:
   - git:
-      repoURL: https://github.com/meelas24/meelas-cluster.git
+      repoURL: https://github.com/meelas24/meelas-cluster
       revision: HEAD
       directories:
-      - path: applications/*/*
+      - path: infrastructure/databases/*
+      - exclude: true
+        path: infrastructure/databases/apps
   template:
     metadata:
       name: '{{path.basename}}'
       labels:
-        type: application
+        type: infrastructure
     spec:
-      project: applications
+      project: infrastructure
       source:
         plugin:
           name: kustomize-build-with-helm
-        repoURL: https://github.com/meelas24/meelas-cluster.git
+        repoURL: https://github.com/meelas24/meelas-cluster
         targetRevision: HEAD
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path[1]}}'
+        namespace: databases
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
-        retry:
-          limit: 5
-          backoff:
-            duration: 5s
-            factor: 2
-            maxDuration: 3m
         syncOptions:
         - CreateNamespace=true
         - ServerSideApply=true
@@ -45,3 +41,9 @@ spec:
         - ApplyOutOfSyncOnly=true
         - Replace=false
         - IgnoreMissingTemplate=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

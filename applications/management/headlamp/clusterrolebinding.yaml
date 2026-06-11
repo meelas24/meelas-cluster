@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: headlamp-admin
-    namespace: headlamp
+    namespace: management
 roleRef:
   kind: ClusterRole
   name: cluster-admin
