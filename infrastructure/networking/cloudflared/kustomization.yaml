@@ -9,6 +9,7 @@ resources:
   - ns.yaml
   - deployment.yaml
   - dnsendpoint.yaml
+  - secret.sops.yaml
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
@@ -18,6 +19,3 @@ configMapGenerator:
     options:
       annotations:
         argocd.argoproj.io/sync-wave: "-2"
-
-# The secret will be created manually via kubectl
-# ... existing code ...
