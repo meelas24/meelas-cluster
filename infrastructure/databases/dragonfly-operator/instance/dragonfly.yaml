@@ -14,11 +14,9 @@ spec:
       cpu: 1
       memory: 1Gi
   serviceSpec:
-    metadata:
-      annotations:
-        lbipam.cilium.io/ips: 10.0.50.230
-    spec:
-      type: LoadBalancer
+    type: LoadBalancer
+    annotations:
+      lbipam.cilium.io/ips: 10.0.50.230
   snapshot:
     cron: "0 */6 * * *"
     persistentVolumeClaimSpec:
