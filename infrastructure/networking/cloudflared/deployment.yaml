@@ -22,7 +22,7 @@ spec:
           args:
             - tunnel
             - --edge-ip-version
-            - 4
+            - "4"
             - --protocol
             - http2
             - --config
