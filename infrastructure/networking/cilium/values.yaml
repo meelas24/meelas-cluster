@@ -34,6 +34,8 @@ resources:
   requests:
     cpu: 100m
     memory: 256Mi
+dnsProxy:
+  enableTransparentMode: false
 debug:
   enabled: true
 # Increase rate limit when doing L2 announcements
