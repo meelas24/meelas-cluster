@@ -129,25 +129,17 @@ Cilium is the CNI and Gateway API provider — it must be installed before anyth
 
 ```bash
 helm repo add cilium https://helm.cilium.io && helm repo update
-helm install cilium cilium/cilium -n kube-system \
+helm install cilium cilium/cilium -n network \
   -f infrastructure/cilium/values.yaml \
   --version 1.19.4 \
   --set operator.replicas=1
 
 # Wait for Cilium to be ready
 cilium status && cilium connectivity test
-```
 
-Cilium is managed imperatively (excluded from the AppSet). Apply the L2
-announcement policy and IP pool from the repo after Cilium is running:
-
-```bash
-# Identify your network interface first:
-ip a  # Look for your main interface (e.g., enp1s0, eth0)
-
-# Update l2-policy.yaml with the correct interface name, then apply:
-kubectl apply -f infrastructure/cilium/l2-policy.yaml
-kubectl apply -f infrastructure/cilium/ip-pool.yaml
+# Identify your network interface and update l2-policy.yaml with the
+# correct interface name. The AppSet will manage Cilium after bootstrap
+# and apply l2-policy.yaml + ip-pool.yaml automatically.
 ```
 
 ## Bootstrap
