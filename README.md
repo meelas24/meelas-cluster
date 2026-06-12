@@ -123,6 +123,28 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
 ```
 
+### Install Cilium (CNI)
+
+Cilium is the CNI and Gateway API provider — it must be installed before anything else.
+
+```bash
+helm repo add cilium https://helm.cilium.io && helm repo update
+helm install cilium cilium/cilium -n kube-system \
+  -f infrastructure/cilium/values.yaml \
+  --version 1.19.1 \
+  --set operator.replicas=1
+
+# Wait for Cilium to be ready
+cilium status && cilium connectivity test
+```
+
+Before applying the L2 announcement policy, identify your network interface:
+```bash
+ip a  # Look for your main interface (e.g., enp1s0, eth0)
+```
+
+Then update `infrastructure/cilium/l2-policy.yaml` with the correct interface name. Argo CD will apply this after bootstrap.
+
 ## Bootstrap
 
 ```bash
