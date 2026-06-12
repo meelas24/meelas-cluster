@@ -101,7 +101,7 @@ Add the public key to `.sops.yaml` at the repo root.
 export SETUP_NODEIP=192.168.101.176  # Your node IP
 export SETUP_CLUSTERTOKEN=randomtokensecret12343  # Strong token
 
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.35.1+k3s1" \
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.36.1+k3s1" \
   INSTALL_K3S_EXEC="--node-ip $SETUP_NODEIP \
   --disable=flannel,local-storage,metrics-server,servicelb,traefik \
   --flannel-backend='none' \
@@ -120,7 +120,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config && chmod 600 $HOME/.kube/config
 
 ```bash
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
 ```
 
 ## Bootstrap
@@ -130,8 +130,9 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 git clone https://github.com/meelas24/meelas-cluster.git
 cd meelas-cluster
 
-# 2. Create the sops-age-key secret (contains your age private key)
-#    Must exist before argo-cd starts — CMP sidecar mounts it at startup
+# 2. Create the argocd namespace and the sops-age-key secret
+#    The secret must exist before argo-cd starts — CMP sidecar mounts it at startup
+kubectl create namespace argocd
 kubectl create secret generic sops-age-key \
   --namespace argocd \
   --from-file=keys.txt=$HOME/.config/sops/age/keys.txt
@@ -141,7 +142,7 @@ helm repo add argo https://argoproj.github.io/argo-helm
 helm install argo-cd argo/argo-cd \
   --namespace argocd \
   --create-namespace \
-  --version 9.4.5 \
+  --version 9.5.16 \
   -f infrastructure/argocd/values.yaml
 
 # 4. Wait for argo-cd repo-server to be ready
