@@ -131,7 +131,7 @@ Cilium is the CNI and Gateway API provider — it must be installed before anyth
 helm repo add cilium https://helm.cilium.io && helm repo update
 helm install cilium cilium/cilium -n kube-system \
   -f infrastructure/cilium/values.yaml \
-  --version 1.19.1 \
+  --version 1.19.4 \
   --set operator.replicas=1
 
 # Wait for Cilium to be ready
