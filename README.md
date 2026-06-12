@@ -138,12 +138,17 @@ helm install cilium cilium/cilium -n kube-system \
 cilium status && cilium connectivity test
 ```
 
-Before applying the L2 announcement policy, identify your network interface:
-```bash
-ip a  # Look for your main interface (e.g., enp1s0, eth0)
-```
+Cilium is managed imperatively (excluded from the AppSet). Apply the L2
+announcement policy and IP pool from the repo after Cilium is running:
 
-Then update `infrastructure/cilium/l2-policy.yaml` with the correct interface name. Argo CD will apply this after bootstrap.
+```bash
+# Identify your network interface first:
+ip a  # Look for your main interface (e.g., enp1s0, eth0)
+
+# Update l2-policy.yaml with the correct interface name, then apply:
+kubectl apply -f infrastructure/cilium/l2-policy.yaml
+kubectl apply -f infrastructure/cilium/ip-pool.yaml
+```
 
 ## Bootstrap
 

@@ -12,6 +12,8 @@ spec:
       revision: HEAD
       directories:
       - path: infrastructure/*
+      - exclude: true
+        path: infrastructure/cilium
   template:
     metadata:
       name: '{{path.basename}}'
