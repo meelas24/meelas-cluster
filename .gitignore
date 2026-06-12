@@ -5,7 +5,7 @@ chatmodes/
 **/.DS_Store
 .DS_Store
 # Ignore all .DS_Store files anywhere in the repository
-infrastructure/controllers/argocd/charts/*
+infrastructure/argocd/charts/*
 */instructions/
 instructions/
 kubeconfig-remote.yaml

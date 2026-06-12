@@ -11,14 +11,14 @@ spec:
       repoURL: https://github.com/meelas24/meelas-cluster.git
       revision: HEAD
       directories:
-      - path: applications/*/*
+      - path: applications/*
   template:
     metadata:
       name: '{{path.basename}}'
       labels:
         type: application
     spec:
-      project: applications
+      project: default
       source:
         plugin:
           name: kustomize-build-with-helm
@@ -27,7 +27,7 @@ spec:
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path[1]}}'
+        namespace: '{{path.basename}}'
       syncPolicy:
         automated:
           prune: true

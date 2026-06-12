@@ -8,76 +8,95 @@ GitOps-managed Kubernetes cluster using Argo CD on K3s with Cilium, cert-manager
 - [Architecture](#architecture)
 - [Infrastructure Components](#infrastructure-components)
 - [Applications](#applications)
-- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Bootstrap](#bootstrap)
+- [SOPS Secret Management](#sops-secret-management)
 - [License](#license)
 
 ## Architecture
 
 ```mermaid
 graph TD
-    subgraph "Argo CD Projects"
-        IP[Infrastructure Project] --> IAS[Infrastructure ApplicationSet]
-        AP[Applications Project] --> AAS[Applications ApplicationSet]
-    end
-    
-    subgraph "Infrastructure Components"
-        IAS --> N[Networking]
-        IAS --> S[Storage]
-        IAS --> C[Controllers]
-        
-        N --> Cilium
-        N --> Cloudflared
-        N --> CloudflareDNS
-        N --> Gateway
-        
-        S --> OpenEBS-ZFS
-        
-        C --> CertManager
-        C --> ArgoCD
-        C --> CloudNativePG
-    end
-    
-    subgraph "User Applications"
-        AAS --> Headlamp
+    subgraph "Bootstrap"
+        IAS[infrastructure AppSet] -->|scans infrastructure/*| C1[cilium]
+        IAS -->|scans infrastructure/*| C2[gateway]
+        IAS -->|scans infrastructure/*| C3[cloudflared]
+        IAS -->|scans infrastructure/*| C4[cloudnative-pg]
+        IAS -->|scans infrastructure/*| C5[argocd]
+        IAS -->|scans infrastructure/*| C6[cert-manager]
+        IAS -->|scans infrastructure/*| C7[openebs-zfs]
+        IAS -->|scans infrastructure/*| C8[...]
+        AAS[applications AppSet] -->|scans applications/*| A1[immich]
+        AAS -->|scans applications/*| A2[pocket-id]
+        AAS -->|scans applications/*| A3[headlamp]
     end
 
-    style IP fill:#f9f,stroke:#333,stroke-width:2px
-    style AP fill:#f9f,stroke:#333,stroke-width:2px
+    subgraph "Target Namespaces"
+        N1[network: cilium, gateway, cloudflared, cloudflare-dns, adguard-home]
+        N2[databases: cloudnative-pg, dragonfly-operator, ext-postgres-operator]
+        N3[argocd: argocd]
+        N4[cert-manager: cert-manager]
+        N5[openebs-zfs: openebs-zfs]
+        N6[cloud: immich]
+        N7[security: pocket-id]
+        N8[management: headlamp]
+    end
+
     style IAS fill:#bbf,stroke:#333,stroke-width:2px
     style AAS fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-### Key Features
-- **GitOps Structure**: Two-level Argo CD ApplicationSets for infrastructure/apps
-- **Security Boundaries**: Separate projects with RBAC enforcement
-- **Sync Waves**: Infrastructure deploys first (negative sync waves)
-- **Self-Healing**: Automated sync with pruning and failure recovery
+Each component's `kustomization.yaml` sets `namespace:` to the target namespace. The AppSet's `destination.namespace` (`{{path.basename}}`) is just a fallback — the actual namespace comes from kustomize.
 
 ## Infrastructure Components
 
 | Component | Description | Version |
 |-----------|-------------|---------|
-| **Cilium** | CNI, kube-proxy replacement, L2 announcements, Hubble, Gateway API integration | 1.19.1 |
-| **Gateway API** | Internal (10.0.50.202) and external (10.0.50.200) gateways with wildcard TLS | Cilium-based |
-| **Cloudflared** | DaemonSet for Cloudflare Tunnel (tunnel `rpi5`) | 2026.2.0 |
-| **external-dns** | Cloudflare DNS management via DNSEndpoint CRDs | 1.16.2 |
+| **Cilium** | CNI, kube-proxy replacement, L2 announcements, Hubble, Gateway API | 1.19.1 |
+| **Gateway API** | Internal (10.0.50.202) and external (10.0.50.200) gateways, wildcard TLS | Cilium-based |
+| **Cloudflared** | DaemonSet, wildcard `*.saleem.us` → gateway-external | 2026.2.0 |
+| **external-dns** | Cloudflare DNS via DNSEndpoint CRDs (no gateway-httproute source) | 1.21.1 |
 | **cert-manager** | Let's Encrypt DNS01 via Cloudflare, ClusterIssuer `cloudflare-cluster-issuer` | 1.19.4 |
-| **Argo CD** | GitOps with kustomize-build-with-helm CMP, two AppProjects | 9.4.5 |
+| **Argo CD** | GitOps with kustomize-build-with-helm CMP (sops decryption) | 9.4.5 |
 | **OpenEBS ZFS LocalPV** | Default StorageClass `zfs-localpv`, pool `Data`, lz4 compression | 2.10.0 |
 | **CloudNative-PG** | PostgreSQL operator, cluster-wide mode | 0.28.2 |
+| **Dragonfly** | Redis-compatible in-memory store (operator + instance) | 1.5.0 |
+| **ext-postgres-operator** | Creates databases from PostgresUser CRDs | 3.0.0 |
+| **AdGuard Home** | Network-wide ad blocking (internal) | latest |
 
 ## Applications
 
-| Application | Description | Access |
-|-------------|-------------|--------|
-| **Headlamp** | Kubernetes web UI with cluster-admin SA | `headlamp.saleem.us` via internal gateway |
+| Application | Description | Namespace | Access |
+|-------------|-------------|-----------|--------|
+| **Immich** | Photo management | `cloud` | `photos.saleem.us` |
+| **Pocket ID** | OIDC identity provider | `security` | `pid.saleem.us` |
+| **Headlamp** | Kubernetes web UI | `management` | `headlamp.saleem.us` |
+| **Argo CD** | GitOps UI | `argocd` | `argocd.saleem.us` (internal) |
 
-Additional services (e.g., Immich at `photos.saleem.us`) are deployed on the cluster but not managed through this repository.
+## Prerequisites
 
-## Quick Start
+### Required tools
 
-### Setup k3s
+```bash
+# Install mise for tool version management
+curl https://mise.jdx.dev/install.sh | sh
+mise install
 ```
+
+This installs `sops`, `age`, `kubectl`, `helm`, and `kustomize`.
+
+### Age key (first time only)
+
+```bash
+mkdir -p ~/.config/sops/age
+age-keygen -o ~/.config/sops/age/keys.txt
+```
+
+Add the public key to `.sops.yaml` at the repo root.
+
+### K3s install
+
+```bash
 # Customize these values!
 export SETUP_NODEIP=192.168.101.176  # Your node IP
 export SETUP_CLUSTERTOKEN=randomtokensecret12343  # Strong token
@@ -97,198 +116,77 @@ mkdir -p $HOME/.kube && sudo cp -i /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config && chmod 600 $HOME/.kube/config
 ```
 
-### Install Cilium
+### Gateway API CRDs
+
 ```bash
-# Install Cilium CLI
-## CHECK ARCH FIRST
-CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
-CLI_ARCH=amd64 && [ "$(uname -m)" = "aarch64" ] && CLI_ARCH=arm64
-curl -L --fail --remote-name-all \
-  https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
-sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
-rm cilium-linux-${CLI_ARCH}.tar.gz*
-
-# Helm install Cilium
-# use  helm install if first time, or helm upgrade if trying to update/upgrade/redo something 
-helm repo add cilium https://helm.cilium.io && helm repo update
-helm install cilium cilium/cilium -n kube-system \
-  -f infrastructure/networking/cilium/values.yaml \
-  --version 1.19.1 \
-  --set operator.replicas=1
-
-# Validate installation
-cilium status && cilium connectivity test
-
-# Critical L2 Configuration Note:
-# Before applying the CiliumL2AnnouncementPolicy, you MUST identify your correct network interface:
-
-# 1. List all network interfaces:
-ip a
-
-# 2. Look for your main interface with an IP address matching your network
-# Common interface names:
-# - Ubuntu/Debian: enp1s0, ens18, eth0
-# - macOS: en0
-# - RPi: eth0
-# The interface should show your node's IP address, for example:
-#   enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> ... inet 192.168.1.100/24
-
-# 3. Make note of your interface name for the CiliumL2AnnouncementPolicy
-# You'll need this when applying the infrastructure components via Argo CD
-
-# DO NOT apply the policy here - it will be applied through Argo CD
-# The policy file is located at: infrastructure/networking/cilium/l2policy.yaml
-```
-
-#### Setup GitOps
-```bash
-# Install Helm
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-# Gateway API CRDs
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
-
-# Argo CD Bootstrap
-kubectl create namespace argocd
-kubectl kustomize --enable-helm infrastructure/controllers/argocd | kubectl apply -f -
-kubectl apply -f infrastructure/controllers/argocd/projects.yaml
-
-# Wait for Argo CD
-kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
-
-# Get initial password (change immediately!)
-ARGO_PASS=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d)
-echo "Initial Argo CD password: $ARGO_PASS"
-
-# Generate a New Password:
-# Use a bcrypt hash generator (e.g. https://www.browserling.com/tools/bcrypt)
-# Then update the argocd-secret secret with your new bcrypt hash:
-kubectl -n argocd patch secret argocd-secret \
-  -p '{"stringData": { "admin.password": "<YOUR_BCRYPT_HASH>", "admin.passwordMtime": "'$(date +%FT%T%Z)'" }}'
 ```
 
-### Install Prerequisites
+## Bootstrap
 
-Install [mise](https://mise.jdx.dev) to manage required tool versions:
 ```bash
-curl https://mise.jdx.dev/install.sh | sh
-mise install
+# 1. Clone the repo
+git clone https://github.com/meelas24/meelas-cluster.git
+cd meelas-cluster
+
+# 2. Create the sops-age-key secret (contains your age private key)
+#    Must exist before argo-cd starts — CMP sidecar mounts it at startup
+kubectl create secret generic sops-age-key \
+  --namespace argocd \
+  --from-file=keys.txt=$HOME/.config/sops/age/keys.txt
+
+# 3. Install argo-cd with CMP + sops config
+helm repo add argo https://argoproj.github.io/argo-helm
+helm install argo-cd argo/argo-cd \
+  --namespace argocd \
+  --create-namespace \
+  --version 9.4.5 \
+  -f infrastructure/argocd/values.yaml
+
+# 4. Wait for argo-cd repo-server to be ready
+kubectl wait --namespace argocd \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=repo-server \
+  --timeout=300s
+
+# 5. Apply the 2 AppSets — Argo CD handles everything from here
+kubectl apply -f infrastructure/infrastructure-components-appset.yaml
+kubectl apply -f applications/applications-appset.yaml
 ```
 
-This installs `sops`, `age`, `kubectl`, `helm`, and `kustomize` at the versions specified in `.mise.toml`.
+After step 5, the ApplicationSet controller creates Applications for every component under `infrastructure/*` and `applications/*`. Each Application syncs using the CMP plugin which decrypts `.sops.yaml` files via sops, then runs `kustomize build --enable-helm`.
 
-### SOPS Secret Management
+### Get the Argo CD password
+
+```bash
+kubectl get secret argocd-initial-admin-secret \
+  -n argocd -o jsonpath="{.data.password}" | base64 -d
+```
+
+## SOPS Secret Management
 
 Secrets are encrypted with [SOPS](https://github.com/getsops/sops) using [age](https://age-encryption.org).
 
-#### Generate an age key (first time only)
+### Edit an encrypted secret
 
 ```bash
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-```
-
-This outputs your public key. Add it to `.sops.yaml` at the repo root:
-```yaml
-creation_rules:
-  - path_regex: infrastructure/.*\.sops\.ya?ml
-    encrypted_regex: "^(data|stringData)$"
-    mac_only_encrypted: true
-    age: "age1..."  # your public key here
-```
-
-#### Seed the age key in the cluster
-
-Argo CD needs the age private key to decrypt secrets during builds:
-```bash
-kubectl create secret generic sops-age-key \
-  --namespace argocd \
-  --from-file=keys.txt=~/.config/sops/age/keys.txt
-```
-
-#### Edit an encrypted secret
-
-```bash
-sops infrastructure/networking/cloudflare-dns/secret.sops.yaml
+sops infrastructure/cloudflare-dns/secret.sops.yaml
 ```
 
 This opens the decrypted file in your editor. Save and exit to re-encrypt.
 
-### Setup CloudFlare and Certificates
-```bash
-# REQUIRED BROWSER STEPS FIRST:
-# Navigate to Cloudflare Dashboard:
-# 1. Profile > API Tokens
-# 2. Create Token
-# 3. Use "Edit zone DNS" template
-# 4. Configure permissions:
-#    - Zone - DNS - Edit
-#    - Zone - Zone - Read
-# 5. Set zone resources to your domain
-# 6. Copy the token and your Cloudflare account email
-
-# Set credentials - NEVER COMMIT THESE!
-export CLOUDFLARE_API_TOKEN="your-api-token-here"
-export CLOUDFLARE_EMAIL="your-cloudflare-email"
-export DOMAIN="yourdomain.com"
-export TUNNEL_NAME="k3s-cluster"
-
-# Install cloudflared
-# Linux:
-wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-sudo dpkg -i cloudflared-linux-amd64.deb
-# macOS:
-brew install cloudflare/cloudflare/cloudflared
-
-# Authenticate (opens browser)
-cloudflared tunnel login
-
-# Generate credentials (run from $HOME)
-cloudflared tunnel create $TUNNEL_NAME
-cloudflared tunnel token --cred-file tunnel-creds.json $TUNNEL_NAME
-
-export DOMAIN="yourdomain.com"
-export TUNNEL_NAME="k3s-cluster"  # This should match the name in your config.yaml
-
-# Create namespace for cloudflared
-kubectl create namespace cloudflared
-
-# Create Kubernetes secret
-kubectl create secret generic tunnel-credentials \
-  --namespace=cloudflared \
-  --from-file=credentials.json=tunnel-creds.json
-
-# DNS is now managed by external-dns via DNSEndpoint CRDs.
-# Delete old wildcard DNS records from Cloudflare dashboard.
-
-# Create external-dns secret via SOPS:
-cd infrastructure/networking/cloudflare-dns
-sops --set '["stringData"]["api-token"] "'"$CLOUDFLARE_API_TOKEN"'"' secret.sops.yaml
-cd -
-
-# Create cert-manager secrets
-kubectl create namespace cert-manager
-kubectl create secret generic cloudflare-api-token -n cert-manager \
-  --from-literal=api-token=$CLOUDFLARE_API_TOKEN \
-  --from-literal=email=$CLOUDFLARE_EMAIL
-
-# Verify secrets
-kubectl get secret cloudflare-api-token -n cert-manager -o jsonpath='{.data.email}' | base64 -d
-kubectl get secret cloudflare-api-token -n cert-manager -o jsonpath='{.data.api-token}' | base64 -d
-```
-
-### Final Deployment
+### Create a new encrypted secret
 
 ```bash
-# Apply infrastructure components (from repo root)
-kubectl apply -f infrastructure/controllers/argocd/projects.yaml -n argocd
-kubectl apply -f infrastructure/infrastructure-components-appset.yaml -n argocd
+# Create the unencrypted file
+sops infrastructure/example/secret.sops.yaml
 
-# Deploy applications
-kubectl apply -f my-apps/myapplications-appset.yaml
+# Or encrypt an existing file
+sops --encrypt --in-place infrastructure/example/secret.sops.yaml
 ```
+
+The `.sops.yaml` config at the repo root controls which files are encrypted and with which key. All files matching `(infrastructure|applications)/.*\.sops\.ya?ml` are encrypted.
 
 ## License
 

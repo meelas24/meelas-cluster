@@ -1,29 +1,28 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: infrastructure-components
+  name: infrastructure
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   generators:
   - git:
-      repoURL: https://github.com/meelas24/meelas-cluster
+      repoURL: https://github.com/meelas24/meelas-cluster.git
       revision: HEAD
       directories:
-      - path: infrastructure/controllers/*
-      - path: infrastructure/storage/*
+      - path: infrastructure/*
   template:
     metadata:
       name: '{{path.basename}}'
       labels:
         type: infrastructure
     spec:
-      project: infrastructure
+      project: default
       source:
         plugin:
           name: kustomize-build-with-helm
-        repoURL: https://github.com/meelas24/meelas-cluster
+        repoURL: https://github.com/meelas24/meelas-cluster.git
         targetRevision: HEAD
         path: '{{path}}'
       destination:
