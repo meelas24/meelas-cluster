@@ -10,7 +10,7 @@ resources:
   - secret.sops.yaml
 helmCharts:
   - name: app-template
-    repo: oci://ghcr.io/bjw-s-labs/charts/
+    repo: https://bjw-s-labs.github.io/helm-charts
     version: 4.6.2
     releaseName: pocket-id
     namespace: security

@@ -46,7 +46,7 @@ machine-learning:
     cache:
       enabled: true
       size: 10Gi
-      type: pvc
+      type: persistentVolumeClaim
       existingClaim: immich-ml-cache
       accessMode: ReadWriteOnce
 
