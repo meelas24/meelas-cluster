@@ -24,8 +24,9 @@ graph TD
         IAS -->|scans infrastructure/*| C4[cloudnative-pg]
         IAS -->|scans infrastructure/*| C5[argocd]
         IAS -->|scans infrastructure/*| C6[cert-manager]
-        IAS -->|scans infrastructure/*| C7[openebs-zfs]
-        IAS -->|scans infrastructure/*| C8[...]
+        IAS -->|scans infrastructure/*| C7[external-secrets]
+        IAS -->|scans infrastructure/*| C8[openebs-zfs]
+        IAS -->|scans infrastructure/*| C9[...]
         AAS[applications AppSet] -->|scans applications/*| A1[immich]
         AAS -->|scans applications/*| A2[pocket-id]
         AAS -->|scans applications/*| A3[headlamp]
@@ -36,10 +37,11 @@ graph TD
         N2[databases: cloudnative-pg, dragonfly-operator, ext-postgres-operator]
         N3[argocd: argocd]
         N4[cert-manager: cert-manager]
-        N5[openebs-zfs: openebs-zfs]
-        N6[cloud: immich]
-        N7[security: pocket-id]
-        N8[management: headlamp]
+        N5[external-secrets: external-secrets]
+        N6[openebs-zfs: openebs-zfs]
+        N7[cloud: immich]
+        N8[security: pocket-id]
+        N9[management: headlamp]
     end
 
     style IAS fill:#bbf,stroke:#333,stroke-width:2px
@@ -62,6 +64,7 @@ Each component's `kustomization.yaml` sets `namespace:` to the target namespace.
 | **CloudNative-PG** | PostgreSQL operator, cluster-wide mode | 0.28.2 |
 | **Dragonfly** | Redis-compatible in-memory store (operator + instance) | 1.5.0 |
 | **ext-postgres-operator** | Creates databases from PostgresUser CRDs | 3.0.0 |
+| **External Secrets** | Copies CNPG-generated credentials to ext-postgres-operator | 2.6.0 |
 | **AdGuard Home** | Network-wide ad blocking (internal) | latest |
 
 ## Applications
@@ -176,6 +179,8 @@ kubectl apply -f applications/applications-appset.yaml
 ```
 
 After step 5, the ApplicationSet controller creates Applications for every component under `infrastructure/*` and `applications/*`. Each Application syncs using the CMP plugin which decrypts `.sops.yaml` files via sops, then runs `kustomize build --enable-helm`.
+
+The `ext-postgres-operator` will initially crash-loop because CloudNative-PG generates a random password on cluster creation. The `external-secrets` operator (installed as part of the infrastructure AppSet) automatically copies the CNPG-generated credentials into the operator's secret via a `ClusterSecretStore` + `ExternalSecret` — the operator should come up on the next sync cycle.
 
 ### Get the Argo CD password
 

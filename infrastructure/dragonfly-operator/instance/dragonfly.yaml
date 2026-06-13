@@ -16,7 +16,7 @@ spec:
   serviceSpec:
     type: LoadBalancer
     annotations:
-      lbipam.cilium.io/ips: 10.0.50.221
+      lbipam.cilium.io/ips: 192.168.68.221
   snapshot:
     cron: "0 */6 * * *"
     persistentVolumeClaimSpec:

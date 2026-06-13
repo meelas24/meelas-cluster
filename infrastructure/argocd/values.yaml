@@ -57,13 +57,11 @@ repoServer:
     readOnlyRootFilesystem: true
   initContainers:
     - name: download-sops
-      image: busybox:latest
+      image: ghcr.io/getsops/sops:v3.10.2
       command:
-        - /bin/sh
-        - -c
-        - |
-          wget -qO /opt/sops/sops https://github.com/getsops/sops/releases/download/v3.10.2/sops-v3.10.2.linux.amd64
-          chmod +x /opt/sops/sops
+        - cp
+        - /usr/local/bin/sops
+        - /opt/sops/sops
       volumeMounts:
         - name: sops-bin
           mountPath: /opt/sops

@@ -19,6 +19,9 @@ config:
   inCluster: true
   baseURL: ""
   pluginsDir: "/headlamp/plugins"
+  oidc:
+    secret:
+      create: false
 
 # Service configuration
 service:
