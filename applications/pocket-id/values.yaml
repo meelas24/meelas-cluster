@@ -19,6 +19,8 @@ controllers:
         envFrom:
           - secretRef:
               name: pocket-id-secret
+          - secretRef:
+              name: pocket-id-db
         probes:
           liveness:
             enabled: true

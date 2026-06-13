@@ -4,8 +4,10 @@ namespace: security
 resources:
   - namespace.yaml
   - pvc.yaml
-  - secret.sops.yaml
+  - database.yaml
+  - external-secret.yaml
   - dnsendpoint.yaml
+  - secret.sops.yaml
 helmCharts:
   - name: app-template
     repo: oci://ghcr.io/bjw-s-labs/helm/app-template

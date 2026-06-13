@@ -5,6 +5,7 @@ namespace: argocd
 resources:
   - ns.yaml
   - http-route.yaml
+  - lb-service.yaml
 
 
 helmCharts:
