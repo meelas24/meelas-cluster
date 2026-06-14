@@ -4,6 +4,7 @@ namespace: databases
 resources:
   - secret-store.yaml
   - external-secret.yaml
+  - rbac.yaml
   - crds
 helmCharts:
   - name: ext-postgres-operator
