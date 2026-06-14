@@ -27,6 +27,7 @@ controllers:
 
 service:
   app:
+    controller: main
     ports:
       http:
         port: 80
