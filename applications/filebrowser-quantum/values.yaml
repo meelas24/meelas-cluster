@@ -27,7 +27,6 @@ controllers:
 
 service:
   app:
-    controller: filebrowser
     ports:
       http:
         port: 80
