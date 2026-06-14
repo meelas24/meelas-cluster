@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: security
 resources:
   - namespace.yaml
+  - route.yaml
   - pvc.yaml
   - database.yaml
   - external-secret.yaml

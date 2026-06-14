@@ -43,14 +43,6 @@ service:
       http:
         port: 1411
 
-route:
-  app:
-    hostnames:
-      - pid.saleem.us
-    parentRefs:
-      - name: gateway-external
-        namespace: network
-        sectionName: https
 persistence:
   data:
     enabled: true
