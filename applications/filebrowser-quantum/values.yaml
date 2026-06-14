@@ -1,0 +1,47 @@
+controllers:
+  main:
+    containers:
+      app:
+        image:
+          repository: gtstef/filebrowser
+          tag: stable
+        env:
+          TZ: America/Denver
+        probes:
+          liveness:
+            enabled: true
+            type: HTTP
+            path: /health
+            port: 80
+          readiness:
+            enabled: true
+            type: HTTP
+            path: /health
+            port: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+
+service:
+  app:
+    controller: filebrowser
+    ports:
+      http:
+        port: 80
+
+persistence:
+  config:
+    type: configMap
+    name: filebrowser-config
+    globalMounts:
+      - path: /home/filebrowser/data/config.yaml
+        subPath: config.yaml
+        readOnly: true
+  data:
+    type: persistentVolumeClaim
+    existingClaim: filebrowser-data
+    globalMounts:
+      - path: /data

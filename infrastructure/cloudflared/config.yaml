@@ -19,6 +19,8 @@ ingress:
     service: http://headlamp.management.svc.cluster.local:80
   - hostname: pid.saleem.us
     service: http://pocket-id.security.svc.cluster.local:1411
+  - hostname: files.saleem.us
+    service: http://filebrowser-quantum.cloud.svc.cluster.local:80
   - hostname: "*.saleem.us"
     service: http_status:404
   - hostname: saleem.us
