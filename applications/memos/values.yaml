@@ -1,0 +1,42 @@
+controllers:
+  main:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/usememos/memos
+          tag: 0.24.3
+        env:
+          MEMOS_DRIVER: postgres
+        envFrom:
+          - secretRef:
+              name: memos-db
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+
+service:
+  app:
+    ports:
+      http:
+        port: 5230
+
+persistence:
+  data:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: memos-data
+    globalMounts:
+      - path: /var/opt/memos

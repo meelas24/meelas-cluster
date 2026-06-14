@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: media
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/meelas24/meelas-cluster.git
+      revision: HEAD
+      directories:
+      - path: applications/media/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        type: application
+    spec:
+      project: default
+      source:
+        plugin:
+          name: kustomize-build-with-helm
+        repoURL: https://github.com/meelas24/meelas-cluster.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+        syncOptions:
+        - RespectIgnoreDifferences=true
+        - ApplyOutOfSyncOnly=true
+        - Replace=false
+        - IgnoreMissingTemplate=true

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: syncthing-config
+  namespace: cloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: zfs-localpv
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: syncthing-data
+  namespace: cloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: zfs-localpv
+  volumeMode: Filesystem

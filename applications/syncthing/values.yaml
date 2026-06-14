@@ -1,0 +1,45 @@
+controllers:
+  main:
+    containers:
+      app:
+        image:
+          repository: syncthing/syncthing
+          tag: 2.1.0
+        env:
+          TZ: America/Denver
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+
+service:
+  app:
+    ports:
+      http:
+        port: 8384
+
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: syncthing-config
+    globalMounts:
+      - path: /var/syncthing/config
+  data:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: syncthing-data
+    globalMounts:
+      - path: /data
