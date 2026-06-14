@@ -15,5 +15,5 @@ metadata:
 spec:
   role: pocket-id
   database: pocket-id-db
-  secretName: pocket-id-db
+  secretName: pocket-id-db-user
   privileges: OWNER
