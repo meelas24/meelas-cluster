@@ -25,6 +25,16 @@ ingress:
     service: http://memos.cloud.svc.cluster.local:5230
   - hostname: sync.saleem.us
     service: http://syncthing.cloud.svc.cluster.local:8384
+  - hostname: plex.saleem.us
+    service: http://plex.media.svc.cluster.local:32400
+  - hostname: sonarr.saleem.us
+    service: http://sonarr.media.svc.cluster.local:8989
+  - hostname: radarr.saleem.us
+    service: http://radarr.media.svc.cluster.local:7878
+  - hostname: prowlarr.saleem.us
+    service: http://prowlarr.media.svc.cluster.local:9696
+  - hostname: qbittorrent.saleem.us
+    service: http://qbittorrent.media.svc.cluster.local:8080
   - hostname: "*.saleem.us"
     service: http_status:404
   - hostname: saleem.us

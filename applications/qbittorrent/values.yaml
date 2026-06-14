@@ -1,0 +1,47 @@
+controllers:
+  main:
+    containers:
+      app:
+        image:
+          repository: lscr.io/linuxserver/qbittorrent
+          tag: latest
+        env:
+          TZ: America/Denver
+          PUID: 1000
+          PGID: 1000
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 1Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: 8080
+
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: qbittorrent-config
+    globalMounts:
+      - path: /config
+  downloads:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: media-downloads
+    globalMounts:
+      - path: /downloads

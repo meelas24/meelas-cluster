@@ -1,0 +1,54 @@
+controllers:
+  main:
+    containers:
+      app:
+        image:
+          repository: lscr.io/linuxserver/plex
+          tag: 1.41.6
+        env:
+          TZ: America/Denver
+          PUID: 1000
+          PGID: 1000
+          VERSION: docker
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 10
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+          limits:
+            memory: 4Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: 32400
+
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: plex-config
+    globalMounts:
+      - path: /config
+  transcode:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 2Gi
+    globalMounts:
+      - path: /transcode
+  media:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: media-library
+    globalMounts:
+      - path: /media

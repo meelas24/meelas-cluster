@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: gateway-external
+      namespace: network
+      sectionName: https
+  hostnames:
+    - radarr.saleem.us
+  rules:
+    - backendRefs:
+        - name: radarr
+          port: 7878
+          weight: 1

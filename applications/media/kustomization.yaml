@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: media
 resources:
   - namespace.yaml
+  - pvc.yaml
 commonAnnotations:
   argocd.argoproj.io/sync-wave: "0"

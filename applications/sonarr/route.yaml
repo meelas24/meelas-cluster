@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: gateway-external
+      namespace: network
+      sectionName: https
+  hostnames:
+    - sonarr.saleem.us
+  rules:
+    - backendRefs:
+        - name: sonarr
+          port: 8989
+          weight: 1
