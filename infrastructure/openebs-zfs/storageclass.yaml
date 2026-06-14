@@ -6,7 +6,6 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: zfs.csi.openebs.io
-reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
 parameters:
