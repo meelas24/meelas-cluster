@@ -11,8 +11,16 @@ originRequest:
   http2Origin: false
 
 ingress:
+  - hostname: argocd.saleem.us
+    service: http://argocd-server.argocd.svc.cluster.local:80
+  - hostname: photos.saleem.us
+    service: http://immich-server.cloud.svc.cluster.local:2283
+  - hostname: headlamp.saleem.us
+    service: http://headlamp.management.svc.cluster.local:80
+  - hostname: pid.saleem.us
+    service: http://pocket-id.security.svc.cluster.local:1411
   - hostname: "*.saleem.us"
-    service: https://cilium-gateway-gateway-external.network.svc.cluster.local
-  - hostname: "saleem.us"
-    service: https://cilium-gateway-gateway-external.network.svc.cluster.local
+    service: http_status:404
+  - hostname: saleem.us
+    service: http_status:404
   - service: http_status:404
