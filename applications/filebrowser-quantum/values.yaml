@@ -5,8 +5,20 @@ controllers:
         image:
           repository: gtstef/filebrowser
           tag: stable
+        command:
+          - /bin/sh
+          - -c
+          - |
+            cp /home/filebrowser/data/config.yaml /tmp/config.yaml
+            sed -i "s/__OIDC_CLIENT_SECRET__/$OIDC_CLIENT_SECRET/g" /tmp/config.yaml
+            exec ./filebrowser --config=/tmp/config.yaml
         env:
           TZ: America/Denver
+          OIDC_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: filebrowser-oidc-secret
+                key: OIDC_CLIENT_SECRET
         probes:
           liveness:
             enabled: true

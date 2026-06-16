@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - pvc.yaml
   - configmap.yaml
+  - secret.sops.yaml
   - dnsendpoint.yaml
   - httproute.yaml
 helmCharts:
