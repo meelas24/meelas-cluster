@@ -20,8 +20,6 @@ data:
           enabled: true
         oidc:
           enabled: true
-          clientId: 99672b96-afe2-4f45-837b-eb94ad5282fb
-          clientSecret: __OIDC_CLIENT_SECRET__
           issuerUrl: https://pid.saleem.us
           scopes: email openid profile groups
           userIdentifier: preferred_username
