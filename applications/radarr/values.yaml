@@ -41,7 +41,13 @@ persistence:
       - path: /config
   media:
     enabled: true
-    type: persistentVolumeClaim
-    existingClaim: media-library
+    type: hostPath
+    hostPath: /Data/Media
     globalMounts:
       - path: /media
+  downloads:
+    enabled: true
+    type: hostPath
+    hostPath: /Data/Downloads
+    globalMounts:
+      - path: /downloads
