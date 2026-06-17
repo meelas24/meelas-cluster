@@ -45,4 +45,4 @@ persistence:
     type: hostPath
     hostPath: /Data/Dropbox
     globalMounts:
-      - path: /data
+      - path: /data/dropbox
