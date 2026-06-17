@@ -48,7 +48,7 @@ persistence:
       - path: /transcode
   media:
     enabled: true
-    type: persistentVolumeClaim
-    existingClaim: media-library
+    type: hostPath
+    hostPath: /Data/Media
     globalMounts:
       - path: /media

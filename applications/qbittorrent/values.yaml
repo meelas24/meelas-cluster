@@ -41,7 +41,7 @@ persistence:
       - path: /config
   downloads:
     enabled: true
-    type: persistentVolumeClaim
-    existingClaim: media-downloads
+    type: hostPath
+    hostPath: /Data/Downloads
     globalMounts:
       - path: /downloads
