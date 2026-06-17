@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: cloud
 resources:
   - namespace.yaml
-  - pvc.yaml
   - configmap.yaml
   - secret.sops.yaml
   - dnsendpoint.yaml

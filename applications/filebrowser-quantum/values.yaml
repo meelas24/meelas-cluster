@@ -51,7 +51,7 @@ persistence:
         subPath: config.yaml
         readOnly: true
   data:
-    type: persistentVolumeClaim
-    existingClaim: filebrowser-data
+    type: hostPath
+    hostPath: /Data/Files
     globalMounts:
       - path: /data
