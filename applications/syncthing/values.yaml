@@ -39,7 +39,7 @@ persistence:
       - path: /var/syncthing/config
   data:
     enabled: true
-    type: persistentVolumeClaim
-    existingClaim: syncthing-data
+    type: hostPath
+    hostPath: /Data/Dropbox
     globalMounts:
       - path: /data
