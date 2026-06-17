@@ -55,3 +55,8 @@ persistence:
     hostPath: /Data/Files
     globalMounts:
       - path: /data
+  dropbox:
+    type: hostPath
+    hostPath: /Data/Dropbox
+    globalMounts:
+      - path: /dropbox
