@@ -13,7 +13,7 @@ data:
         - path: /files
           config:
             defaultEnabled: true
-        - path: /dropbox
+        - path: /sync
           config:
             defaultEnabled: true
 
