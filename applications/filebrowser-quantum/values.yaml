@@ -50,6 +50,12 @@ persistence:
       - path: /home/filebrowser/data/config.yaml
         subPath: config.yaml
         readOnly: true
+  db:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: filebrowser-db
+    globalMounts:
+      - path: /home/filebrowser/data/db
   data:
     type: hostPath
     hostPath: /Data/Files
