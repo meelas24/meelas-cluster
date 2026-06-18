@@ -1,3 +1,5 @@
+podSecurityContext:
+  fsGroup: 1000
 controllers:
   main:
     containers:
