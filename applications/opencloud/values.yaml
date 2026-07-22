@@ -5,6 +5,13 @@ controllers:
         image:
           repository: opencloudeu/opencloud
           tag: latest
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - |
+            opencloud init || true
+            opencloud server
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
@@ -16,12 +23,6 @@ controllers:
               name: opencloud-secret
           - secretRef:
               name: opencloud-init
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-    pod:
-      securityContext:
-        fsGroup: 1000
         probes:
           liveness:
             enabled: true
@@ -66,9 +67,7 @@ service:
 
 persistence:
   config:
-    enabled: true
-    type: persistentVolumeClaim
-    existingClaim: opencloud-config
+    type: emptyDir
     globalMounts:
       - path: /etc/opencloud
   data:
