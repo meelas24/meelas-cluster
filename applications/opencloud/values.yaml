@@ -6,12 +6,8 @@ controllers:
           repository: opencloudeu/opencloud
           tag: latest
         command:
-          - /bin/sh
-          - -c
-        args:
-          - |
-            opencloud init || true
-            opencloud server
+          - opencloud
+          - server
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
