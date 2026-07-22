@@ -20,6 +20,12 @@ controllers:
               name: opencloud-secret
           - secretRef:
               name: opencloud-init
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+    pod:
+      securityContext:
+        fsGroup: 1000
         probes:
           liveness:
             enabled: true
@@ -28,6 +34,7 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
+                scheme: HTTPS
               initialDelaySeconds: 30
               periodSeconds: 10
           readiness:
@@ -37,6 +44,7 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
+                scheme: HTTPS
               initialDelaySeconds: 10
               periodSeconds: 5
           startup:
@@ -46,6 +54,7 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
+                scheme: HTTPS
               failureThreshold: 30
               periodSeconds: 5
         resources:
