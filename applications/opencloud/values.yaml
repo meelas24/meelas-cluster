@@ -6,12 +6,13 @@ controllers:
           repository: opencloudeu/opencloud
           tag: latest
         command:
-          - opencloud
-          - server
+          - /bin/sh
+          - -c
+          - "opencloud init || true; opencloud server"
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
-          OCIS_INSECURE: "false"
+          OC_INSECURE: "false"
           OCIS_LOG_LEVEL: "info"
           OCIS_LOG_PRETTY: "false"
         envFrom:
@@ -63,7 +64,9 @@ service:
 
 persistence:
   config:
-    type: emptyDir
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: opencloud-config
     globalMounts:
       - path: /etc/opencloud
   data:
