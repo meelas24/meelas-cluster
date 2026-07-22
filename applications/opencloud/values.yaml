@@ -9,9 +9,21 @@ controllers:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
           OCIS_INSECURE: "false"
+          OCIS_CONFIG_DIR: "/etc/opencloud"
+          OCIS_BASE_DATA_PATH: "/var/lib/opencloud"
         envFrom:
           - secretRef:
               name: opencloud-secret
+        command:
+          - /bin/sh
+          - -c
+          - |
+            if [ ! -f /etc/opencloud/ocis.yaml ]; then
+              echo "Initializing OpenCloud config..."
+              opencloud init
+            fi
+            echo "Starting OpenCloud server..."
+            opencloud server
         probes:
           liveness:
             enabled: true
