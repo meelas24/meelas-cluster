@@ -11,17 +11,3 @@ spec:
       storage: 1Gi
   storageClassName: zfs-localpv
   volumeMode: Filesystem
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: opencloud-data
-  namespace: cloud
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: zfs-localpv
-  volumeMode: Filesystem

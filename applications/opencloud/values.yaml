@@ -62,8 +62,7 @@ persistence:
     globalMounts:
       - path: /etc/opencloud
   data:
-    enabled: true
-    type: persistentVolumeClaim
-    existingClaim: opencloud-data
+    type: hostPath
+    hostPath: /Data
     globalMounts:
       - path: /var/lib/opencloud
