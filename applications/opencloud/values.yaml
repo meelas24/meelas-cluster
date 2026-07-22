@@ -35,6 +35,10 @@ controllers:
                 path: /
                 port: 9200
                 scheme: HTTPS
+                httpHeaders:
+                  - name: Host
+                    value: opencloud.saleem.us
+              insecureSkipVerify: true
               initialDelaySeconds: 30
               periodSeconds: 10
           readiness:
@@ -45,6 +49,10 @@ controllers:
                 path: /
                 port: 9200
                 scheme: HTTPS
+                httpHeaders:
+                  - name: Host
+                    value: opencloud.saleem.us
+              insecureSkipVerify: true
               initialDelaySeconds: 10
               periodSeconds: 5
           startup:
@@ -55,6 +63,10 @@ controllers:
                 path: /
                 port: 9200
                 scheme: HTTPS
+                httpHeaders:
+                  - name: Host
+                    value: opencloud.saleem.us
+              insecureSkipVerify: true
               failureThreshold: 30
               periodSeconds: 5
         resources:
