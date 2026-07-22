@@ -5,21 +5,17 @@ controllers:
         image:
           repository: opencloudeu/opencloud
           tag: latest
-        command:
-          - /bin/sh
-          - -c
-          - "opencloud init || true; opencloud server"
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
           OCIS_INSECURE: "false"
-          OCIS_CONFIG_DIR: "/etc/opencloud"
-          OCIS_BASE_DATA_PATH: "/var/lib/opencloud"
           OCIS_LOG_LEVEL: "info"
           OCIS_LOG_PRETTY: "false"
         envFrom:
           - secretRef:
               name: opencloud-secret
+          - secretRef:
+              name: opencloud-init
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000

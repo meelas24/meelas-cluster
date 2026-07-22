@@ -4,6 +4,7 @@ namespace: cloud
 resources:
   - pvc.yaml
   - secret.sops.yaml
+  - init-secret.yaml
   - dnsendpoint.yaml
   - httproute.yaml
 helmCharts:
