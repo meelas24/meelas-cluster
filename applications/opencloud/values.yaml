@@ -4,7 +4,7 @@ controllers:
       app:
         image:
           repository: opencloudeu/opencloud
-          tag: "7.3.0"
+          tag: latest
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
