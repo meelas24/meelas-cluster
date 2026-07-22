@@ -5,6 +5,10 @@ controllers:
         image:
           repository: opencloudeu/opencloud
           tag: latest
+        command:
+          - /bin/sh
+          - -c
+          - "opencloud init || true; opencloud server"
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
@@ -16,6 +20,12 @@ controllers:
         envFrom:
           - secretRef:
               name: opencloud-secret
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+    pod:
+      securityContext:
+        fsGroup: 1000
         probes:
           liveness:
             enabled: true
