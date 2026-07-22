@@ -12,7 +12,8 @@ controllers:
         env:
           PROXY_HTTP_ADDR: "0.0.0.0:9200"
           OC_URL: "https://opencloud.saleem.us"
-          OC_INSECURE: "false"
+          PROXY_TLS: "false"
+          OC_INSECURE: "true"
           OCIS_LOG_LEVEL: "info"
           OCIS_LOG_PRETTY: "false"
         envFrom:
@@ -34,11 +35,6 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
-                scheme: HTTPS
-                httpHeaders:
-                  - name: Host
-                    value: opencloud.saleem.us
-              insecureSkipVerify: true
               initialDelaySeconds: 30
               periodSeconds: 10
           readiness:
@@ -48,11 +44,6 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
-                scheme: HTTPS
-                httpHeaders:
-                  - name: Host
-                    value: opencloud.saleem.us
-              insecureSkipVerify: true
               initialDelaySeconds: 10
               periodSeconds: 5
           startup:
@@ -62,11 +53,6 @@ controllers:
               httpGet:
                 path: /
                 port: 9200
-                scheme: HTTPS
-                httpHeaders:
-                  - name: Host
-                    value: opencloud.saleem.us
-              insecureSkipVerify: true
               failureThreshold: 30
               periodSeconds: 5
         resources:
