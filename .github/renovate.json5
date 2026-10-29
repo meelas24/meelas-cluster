@@ -2,30 +2,37 @@
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
     'config:recommended',
+    'docker:enableMajor',
+    'helpers:pinGitHubActionDigests',
+    ':automergeBranch',
+    ':dependencyDashboard',
+    ':semanticCommits',
   ],
-  prHourlyLimit: 3,
+  dependencyDashboard: true,
+  dependencyDashboardTitle: 'Renovate Dashboard 🤖',
+  schedule: [
+    'every weekend',
+  ],
   enabledManagers: [
     'helm-values',
     'kubernetes',
     'kustomize',
-    'argocd',
+    'github-actions',
+    'mise',
+    'custom.regex',
   ],
-  argocd: {
-    managerFilePatterns: [
-      '/^infrastructure/.+\\.yaml$/',
-      '/^applications/.+\\.yaml$/',
-    ],
-  },
+  ignorePaths: [
+    '**/*.sops.*',
+    '**/charts/**',
+  ],
   kubernetes: {
     managerFilePatterns: [
-      '/^infrastructure/.+\\.yaml$/',
-      '/^applications/.+\\.yaml$/',
+      '/^(applications|infrastructure)/.+\\.ya?ml$/',
     ],
   },
   'helm-values': {
     managerFilePatterns: [
-      '/^infrastructure/.+/values\\.yaml$/',
-      '/^applications/.+/values\\.yaml$/',
+      '/^(applications|infrastructure)/.+/(.+-)?values\\.ya?ml$/',
     ],
   },
   kustomize: {
@@ -35,34 +42,207 @@
   },
   packageRules: [
     {
+      description: 'Auto-merge GitHub Actions',
+      matchManagers: [
+        'github-actions',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'digest',
+      ],
+      minimumReleaseAge: '3 days',
+      ignoreTests: true,
+    },
+    {
+      description: 'Auto-merge Mise Tools',
+      matchManagers: [
+        'mise',
+      ],
+      automerge: true,
+      automergeType: 'branch',
       matchUpdateTypes: [
         'minor',
         'patch',
       ],
-      matchManagers: [
-        'helm-values',
-        'kubernetes',
-        'kustomize',
-        'argocd',
+      ignoreTests: true,
+    },
+    {
+      description: 'Auto-merge Helm Chart Minor and Patch Updates',
+      matchDatasources: [
+        'helm',
       ],
       automerge: true,
       automergeType: 'branch',
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      minimumReleaseAge: '3 days',
+      ignoreTests: true,
+    },
+    {
+      description: 'Auto-merge Container Minor and Patch Updates',
+      matchDatasources: [
+        'docker',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      minimumReleaseAge: '3 days',
+      ignoreTests: true,
+    },
+    {
+      description: 'Never auto-merge cluster-critical infrastructure (single node, ArgoCD syncs on merge)',
+      matchFileNames: [
+        'infrastructure/cilium/**',
+        'infrastructure/cloudnative-pg/**',
+        'infrastructure/openebs-zfs/**',
+        'infrastructure/argocd/**',
+      ],
+      automerge: false,
     },
     {
       matchUpdateTypes: [
         'major',
       ],
-      matchManagers: [
-        'helm-values',
-        'kubernetes',
-        'kustomize',
-        'argocd',
+      semanticCommitType: 'feat',
+      commitMessagePrefix: '{{semanticCommitType}}({{semanticCommitScope}})!:',
+      commitMessageExtra: '( {{currentVersion}} ➔ {{newVersion}} )',
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
       ],
-      automerge: false,
-      prCreation: 'immediate',
+      semanticCommitType: 'feat',
+      commitMessageExtra: '( {{currentVersion}} ➔ {{newVersion}} )',
+    },
+    {
+      matchUpdateTypes: [
+        'patch',
+      ],
+      semanticCommitType: 'fix',
+      commitMessageExtra: '( {{currentVersion}} ➔ {{newVersion}} )',
+    },
+    {
+      matchUpdateTypes: [
+        'digest',
+      ],
+      semanticCommitType: 'chore',
+      commitMessageExtra: '( {{currentDigestShort}} ➔ {{newDigestShort}} )',
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      semanticCommitScope: 'container',
+      commitMessageTopic: 'image {{depName}}',
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      semanticCommitScope: 'helm',
+      commitMessageTopic: 'chart {{depName}}',
+    },
+    {
+      matchManagers: [
+        'github-actions',
+      ],
+      semanticCommitType: 'ci',
+      semanticCommitScope: 'github-action',
+      commitMessageTopic: 'action {{depName}}',
+    },
+    {
+      matchDatasources: [
+        'github-releases',
+      ],
+      semanticCommitScope: 'github-release',
+      commitMessageTopic: 'release {{depName}}',
+    },
+    {
+      matchManagers: [
+        'mise',
+      ],
+      semanticCommitScope: 'mise',
+      commitMessageTopic: 'tool {{depName}}',
+    },
+    {
+      matchUpdateTypes: [
+        'major',
+      ],
+      labels: [
+        'type/major',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+      ],
+      labels: [
+        'type/minor',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'patch',
+      ],
+      labels: [
+        'type/patch',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      addLabels: [
+        'renovate/container',
+      ],
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      addLabels: [
+        'renovate/helm',
+      ],
+    },
+    {
+      matchManagers: [
+        'github-actions',
+      ],
+      addLabels: [
+        'renovate/github-action',
+      ],
+    },
+    {
+      matchDatasources: [
+        'github-releases',
+      ],
+      addLabels: [
+        'renovate/github-release',
+      ],
     },
   ],
-  ignorePaths: [
-    '**/charts/**',
+  customManagers: [
+    {
+      description: 'Process annotated dependencies',
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/).+\\.env$/',
+        '/(^|/).+\\.sh$/',
+        '/(^|/).+\\.ya?ml$/',
+      ],
+      matchStrings: [
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+(:\\s|=)(&\\S+\\s)?(?<currentValue>\\S+)',
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)',
+      ],
+      datasourceTemplate: '{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}',
+    },
   ],
 }
