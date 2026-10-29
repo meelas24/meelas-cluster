@@ -11,6 +11,18 @@ spec:
     size: 100Gi
     storageClass: zfs-localpv
   enableSuperuserAccess: true
+  # Kernel 7.0.0-42 stacks cri-containerd.apparmor.d on unconfined and denies
+  # signals between processes (postgres: "could not signal for checkpoint").
+  # Restate the CNPG defaults, since this block replaces them.
+  podSecurityContext:
+    runAsUser: 26
+    runAsGroup: 26
+    runAsNonRoot: true
+    fsGroup: 26
+    seccompProfile:
+      type: RuntimeDefault
+    appArmorProfile:
+      type: Unconfined
   monitoring:
     enablePodMonitor: false
   resources:
