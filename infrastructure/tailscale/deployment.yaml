@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tailscale
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tailscale
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tailscale
+    spec:
+      serviceAccountName: tailscale
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: app
+          image: ghcr.io/tailscale/tailscale:v1.98.10
+          env:
+            - name: TS_HOSTNAME
+              value: meelas-cluster
+            - name: TS_USERSPACE
+              value: "true"
+            - name: TS_KUBE_SECRET
+              value: tailscale-state
+            # LAN (node is 192.168.68.86/22) + K3s service CIDR
+            - name: TS_ROUTES
+              value: 192.168.68.0/22,10.43.0.0/16
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
+            - name: TS_AUTH_ONCE
+              value: "true"
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-secret
+                  key: TS_AUTHKEY
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
