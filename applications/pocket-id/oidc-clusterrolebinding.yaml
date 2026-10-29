@@ -1,14 +1,14 @@
-# Grants cluster-admin to the Pocket ID user (oidc-username-claim=sub, no
-# username prefix, so the apiserver identity is "<issuer>#<sub>").
+# Grants cluster-admin to members of the "kubernetes" group in Pocket ID.
+# The apiserver prefixes group names with "oidc:" (--oidc-groups-prefix).
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: oidc-cluster-admin
+  name: oidc-cluster-admins
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-admin
 subjects:
   - apiGroup: rbac.authorization.k8s.io
-    kind: User
-    name: "https://pid.saleem.us#2eefa725-89b0-4577-9287-205436e9eb7c"
+    kind: Group
+    name: oidc:kubernetes
