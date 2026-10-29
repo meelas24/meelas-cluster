@@ -35,8 +35,6 @@ ingress:
     service: http://prowlarr.media.svc.cluster.local:9696
   - hostname: qbittorrent.saleem.us
     service: http://qbittorrent.media.svc.cluster.local:8080
-  - hostname: opencloud.saleem.us
-    service: http://opencloud.cloud.svc.cluster.local:9200
   - hostname: "*.saleem.us"
     service: http_status:404
   - hostname: saleem.us
