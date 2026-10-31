@@ -5,7 +5,7 @@ namespace: network
 helmCharts:
   - name: external-dns
     repo: https://kubernetes-sigs.github.io/external-dns
-    version: 1.21.1 # renovate: helm=external-dns/external-dns
+    version: 1.23.0 # renovate: helm=external-dns/external-dns
     releaseName: external-dns
     namespace: network
     valuesFile: values.yaml
