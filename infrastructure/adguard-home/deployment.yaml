@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: adguard-home
-          image: adguard/adguardhome:v0.107.74
+          image: adguard/adguardhome:v0.107.79
           args:
             - --config
             - /opt/adguardhome/conf/AdGuardHome.yaml
