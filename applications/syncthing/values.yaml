@@ -7,7 +7,7 @@ controllers:
       app:
         image:
           repository: syncthing/syncthing
-          tag: 2.1.0
+          tag: 2.1.7
         env:
           TZ: America/Denver
         probes:
