@@ -7,7 +7,7 @@ resources:
 helmCharts:
   - name: zfs-localpv
     repo: https://openebs.github.io/zfs-localpv
-    version: 2.10.0
+    version: 2.11.2
     releaseName: openebs-zfs
     namespace: openebs-zfs
     valuesFile: values.yaml
