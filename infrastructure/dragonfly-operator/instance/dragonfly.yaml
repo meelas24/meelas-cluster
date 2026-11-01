@@ -5,7 +5,7 @@ metadata:
   namespace: databases
 spec:
   replicas: 1
-  image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.31.1
+  image: docker.dragonflydb.io/dragonflydb/dragonfly:v2.0.2
   resources:
     requests:
       cpu: 500m
