@@ -7,7 +7,7 @@ controllers:
       app:
         image:
           repository: adguard/adguardhome
-          tag: v0.107.79
+          tag: v0.107.80
         args:
           - --config
           - /opt/adguardhome/conf/AdGuardHome.yaml
