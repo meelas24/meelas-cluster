@@ -11,7 +11,7 @@ resources:
 helmCharts:
   - name: app-template
     repo: https://bjw-s-labs.github.io/helm-charts
-    version: 3.7.3
+    version: 5.3.0
     releaseName: filebrowser-quantum
     namespace: cloud
     valuesFile: values.yaml
