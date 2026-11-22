@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: renovate
     repo: https://docs.renovatebot.com/helm-charts
-    version: 46.444.6
+    version: 46.444.7
     releaseName: renovate
     namespace: renovate
     valuesFile: values.yaml
